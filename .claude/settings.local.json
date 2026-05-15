@@ -32,7 +32,8 @@
       "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process tsx -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(pnpm dlx *)",
       "Bash(pkill -f \"shadcn\")",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "Bash(pnpm build *)"
     ]
   }
 }

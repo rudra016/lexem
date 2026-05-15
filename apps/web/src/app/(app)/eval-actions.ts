@@ -195,7 +195,7 @@ export async function createEvalFromTemplateAction(
   const template = EVAL_TEMPLATES.find((t) => t.id === parsed.templateId);
   if (!template) throw new Error("Template not found");
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const evalRow = await tx.eval.create({
       data: {
         promptId: prompt.id,

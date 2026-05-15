@@ -90,7 +90,7 @@ export async function rollbackToVersionAction(input: z.infer<typeof RollbackInpu
     throw new Error("That version is already current.");
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const v = await tx.version.create({
       data: {
         promptId: prompt.id,
@@ -181,7 +181,7 @@ export async function commitVersionAction(input: z.infer<typeof CommitVersionInp
   });
   if (!branch) throw new Error(`Branch "${parsed.branchName}" not found`);
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const v = await tx.version.create({
       data: {
         promptId: prompt.id,
@@ -296,7 +296,7 @@ export async function mergeBranchAction(input: z.infer<typeof MergeInput>) {
 
   const variables = parseVariables(parsed.resolvedContent);
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const v = await tx.version.create({
       data: {
         promptId: prompt.id,
