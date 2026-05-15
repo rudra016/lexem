@@ -1,0 +1,13 @@
+{
+  "name": "lexem",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter \"./apps/*\" dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter @lexem/api dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

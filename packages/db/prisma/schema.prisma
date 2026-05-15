@@ -1,0 +1,302 @@
+// Lexem data model — Phase 0 (P0-01)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Users & Teams ----------
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships TeamMember[]
+  versions    Version[]    @relation("VersionAuthor")
+  accounts    Account[]
+  sessions    Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  TeamMember[]
+  projects Project[]
+  invites  TeamInvite[]
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  role      TeamRole @default(EDITOR)
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  teamId    String
+  email     String
+  role      TeamRole @default(EDITOR)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+}
+
+// ---------- Projects, Prompts, Versions ----------
+
+model Project {
+  id        String   @id @default(cuid())
+  teamId    String
+  name      String
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team         Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  prompts      Prompt[]
+  environments Environment[]
+  apiKeys      ApiKey[]
+
+  @@unique([teamId, slug])
+}
+
+model Prompt {
+  id               String   @id @default(cuid())
+  projectId        String
+  name             String
+  slug             String
+  description      String?
+  currentVersionId String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  currentVersion Version?  @relation("PromptCurrentVersion", fields: [currentVersionId], references: [id])
+  versions       Version[] @relation("PromptVersions")
+  branches       Branch[]
+  evals          Eval[]
+
+  @@unique([projectId, slug])
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  promptId  String
+  name      String
+  headId    String?  @unique
+  createdAt DateTime @default(now())
+
+  prompt Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  head   Version? @relation("BranchHead", fields: [headId], references: [id])
+
+  @@unique([promptId, name])
+}
+
+model Version {
+  id              String   @id @default(cuid())
+  promptId        String
+  parentVersionId String?
+  authorId        String?
+  branchName      String   @default("main")
+  content         String
+  variables       Json?
+  commitMessage   String
+  createdAt       DateTime @default(now())
+
+  prompt        Prompt    @relation("PromptVersions", fields: [promptId], references: [id], onDelete: Cascade)
+  parentVersion Version?  @relation("VersionParent", fields: [parentVersionId], references: [id])
+  children      Version[] @relation("VersionParent")
+  author        User?     @relation("VersionAuthor", fields: [authorId], references: [id])
+
+  currentOf    Prompt?       @relation("PromptCurrentVersion")
+  branchHead   Branch?       @relation("BranchHead")
+  tags         VersionTag[]
+  runs         Run[]
+  deployments  Deployment[]
+  environments Environment[]
+
+  @@index([promptId, createdAt])
+}
+
+model VersionTag {
+  id        String   @id @default(cuid())
+  versionId String
+  name      String
+  createdAt DateTime @default(now())
+
+  version Version @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@unique([versionId, name])
+}
+
+// ---------- Environments & Deploys ----------
+
+model Environment {
+  id              String   @id @default(cuid())
+  projectId       String
+  name            String
+  activeVersionId String?
+  scoreThreshold  Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activeVersion Version?     @relation(fields: [activeVersionId], references: [id], map: "Environment_activeVersionId_fkey")
+  deployments   Deployment[]
+
+  @@unique([projectId, name])
+}
+
+model Deployment {
+  id            String   @id @default(cuid())
+  environmentId String
+  versionId     String
+  deployedBy    String?
+  createdAt     DateTime @default(now())
+
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  version     Version     @relation(fields: [versionId], references: [id])
+
+  @@index([environmentId, createdAt])
+}
+
+// ---------- Evals & Runs ----------
+
+enum ScorerType {
+  EXACT_MATCH
+  LLM_JUDGE
+  REGEX
+}
+
+model Eval {
+  id        String   @id @default(cuid())
+  promptId  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prompt Prompt     @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  cases  EvalCase[]
+  runs   Run[]
+}
+
+model EvalCase {
+  id             String     @id @default(cuid())
+  evalId         String
+  name           String?
+  inputVars      Json
+  expectedOutput String?
+  scorerType     ScorerType
+  scorerConfig   Json?
+  createdAt      DateTime   @default(now())
+
+  eval Eval @relation(fields: [evalId], references: [id], onDelete: Cascade)
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+model Run {
+  id          String    @id @default(cuid())
+  evalId      String
+  versionId   String
+  status      RunStatus @default(QUEUED)
+  score       Float?
+  results     Json?
+  tokensIn    Int?
+  tokensOut   Int?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  eval    Eval    @relation(fields: [evalId], references: [id], onDelete: Cascade)
+  version Version @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId, createdAt])
+}
+
+// ---------- API Keys ----------
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  projectId  String
+  name       String
+  hashedKey  String    @unique
+  prefix     String
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
