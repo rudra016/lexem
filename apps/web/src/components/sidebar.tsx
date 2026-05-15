@@ -22,7 +22,7 @@ type Team = { id: string; name: string; slug: string };
 type User = { id: string; email: string; name?: string | null; image?: string | null };
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/prompts", label: "Prompts", icon: FileText },
   { href: "/evals", label: "Evals", icon: FlaskConical },
   { href: "/environments", label: "Environments", icon: Boxes },
@@ -89,6 +89,7 @@ export function Sidebar({
                 height={629}
                 style={{ height: 28, width: "auto" }}
                 className="shrink-0 block"
+                draggable={false}
                 priority
               />
               <div className="min-w-0">
@@ -109,8 +110,7 @@ export function Sidebar({
 
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         {NAV.map((item) => {
-          const active =
-            pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
           return (
             <Link

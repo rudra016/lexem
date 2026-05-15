@@ -44,7 +44,7 @@ export default async function EvalsPage({
   return (
     <div className="max-w-5xl mx-auto px-8 py-8">
       <div className="text-xs text-neutral-500 mb-2">
-        <Link href="/" className="hover:underline">Projects</Link>
+        <Link href="/dashboard" className="hover:underline">Projects</Link>
         <span className="mx-2">/</span>
         <Link href={`/projects/${slug}`} className="hover:underline">{prompt.project.slug}</Link>
         <span className="mx-2">/</span>

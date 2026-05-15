@@ -10,7 +10,7 @@ import { Spinner } from "@/components/spinner";
 
 export function LoginForm() {
   const params = useSearchParams();
-  const from = params.get("from") ?? "/";
+  const from = params.get("from") ?? "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,11 +45,12 @@ export function LoginForm() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-6">
           <Image
-            src="/logo-bg.png"
+            src="/logo-no-bg.png"
             alt="Lexem"
-            width={90}
+            width={130}
             height={90}
             className="object-contain"
+            draggable={false}
             priority
           />
 

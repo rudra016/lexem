@@ -43,7 +43,7 @@ export default function SignupPage() {
     await signIn("credentials", {
       email,
       password,
-      callbackUrl: "/",
+      callbackUrl: "/dashboard",
     });
   }
 
@@ -53,11 +53,12 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-6">
           <Image
-            src="/logo-bg.png"
+            src="/logo-no-bg.png"
             alt="Lexem"
-            width={90}
+            width={130}
             height={90}
             className="object-contain"
+            draggable={false}
             priority
           />
 
@@ -75,7 +76,7 @@ export default function SignupPage() {
         >
           {/* Google */}
           <button
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className="
             w-full mb-5 h-11 rounded-xl
             border border-black

@@ -33,7 +33,7 @@ export async function createProjectAction(input: z.infer<typeof CreateProjectInp
     const project = await prisma.project.create({
       data: { teamId: parsed.teamId, name: parsed.name, slug: parsed.slug },
     });
-    revalidatePath("/");
+    revalidatePath("/dashboard");
     return project;
   } catch (e) {
     rethrowAsFriendly(e);

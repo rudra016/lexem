@@ -22,7 +22,7 @@ export default async function ProjectPage({
   return (
     <div className="max-w-5xl mx-auto px-8 py-10">
       <div className="text-xs text-neutral-500 mb-2">
-        <Link href="/" className="hover:underline">Projects</Link>
+        <Link href="/dashboard" className="hover:underline">Projects</Link>
         <span className="mx-2">/</span>
         <span>{project.slug}</span>
       </div>

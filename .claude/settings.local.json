@@ -33,7 +33,8 @@
       "Bash(pnpm dlx *)",
       "Bash(pkill -f \"shadcn\")",
       "Bash(pnpm add *)",
-      "Bash(pnpm build *)"
+      "Bash(pnpm build *)",
+      "Bash(curl -s -o /dev/null -w \"GET / → %{http_code}\\\\n\" http://localhost:3000/)"
     ]
   }
 }

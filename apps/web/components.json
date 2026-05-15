@@ -19,6 +19,9 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@dotmatrix": "https://dotmatrix.zzzzshawn.cloud/r/{name}.json"
+    "@dotmatrix": "https://dotmatrix.zzzzshawn.cloud/r/{name}.json",
+    "@ncdai": "https://chanhdai.com/r/{name}.json",
+    "@animate-ui": "https://animate-ui.com/r/{name}.json",
+    "@magicui": "https://magicui.design/r/{name}"
   }
 }
