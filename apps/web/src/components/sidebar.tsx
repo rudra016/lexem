@@ -47,7 +47,7 @@ export function Sidebar({
     const next = !collapsed;
     setCollapsed(next);
     document.cookie = `sb_collapsed=${next ? "1" : "0"}; path=/; max-age=31536000; samesite=lax`;
-    start(() => {});
+    start(() => { });
   }
 
   return (
@@ -67,13 +67,13 @@ export function Sidebar({
           <button
             onClick={toggle}
             aria-label="Expand sidebar"
-            className="p-1 hover:bg-neutral-100"
+            className=""
           >
             <Image
-              src="/logo.png"
+              src="/logo-bg.png"
               alt="Lexem"
-              width={40}
-              height={40}
+              width={50}
+              height={50}
               className="shrink-0"
               priority
             />
@@ -82,18 +82,16 @@ export function Sidebar({
           <>
             <div className="flex items-center gap-2 min-w-0">
               <Image
-                src="/logo.png"
+                src="/logo-bg.png"
                 alt="Lexem"
-                width={40}
-                height={40}
+                width={50}
+                height={50}
                 className="shrink-0"
                 priority
               />
               <div className="min-w-0">
-                <div className="font-serif font-semibold text-lg leading-none tracking-wide">Lexem</div>
-                {activeTeam && (
-                  <div className="text-xs text-neutral-500 mt-1 truncate">{activeTeam.name}</div>
-                )}
+                <div className="font-serif font-semibold text-2xl leading-none tracking-wide">Lexem</div>
+
               </div>
             </div>
             <button

@@ -281,19 +281,17 @@ export function VersionHistory({
               <button
                 onClick={() => setRollbackId(null)}
                 disabled={pending}
-                className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+                className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
               >
                 Cancel
               </button>
               <button
                 onClick={() => rollback(rollbackId)}
                 disabled={pending}
-                className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
+                className="h-9 px-4 bg-black text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
               >
-                <span className="inline-flex items-center gap-2">
-                  {pending && <Spinner size={14} />}
-                  {pending ? "Rolling back" : "Rollback"}
-                </span>
+                {pending && <Spinner size={14} />}
+                {pending ? "Rolling back" : "Rollback"}
               </button>
             </div>
           </div>

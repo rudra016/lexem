@@ -32,7 +32,7 @@ export function CreatePromptDialog({ projectSlug }: { projectSlug: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-black text-white text-sm font-medium"
+        className="px-4 py-2 bg-black text-white text-sm font-medium hover:-translate-y-1 hover:transition-all duration-200 cursor-pointer"
       >
         New prompt
       </button>
@@ -73,19 +73,17 @@ export function CreatePromptDialog({ projectSlug }: { projectSlug: string }) {
               <button
                 onClick={() => setOpen(false)}
                 disabled={pending}
-                className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+                className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={pending || !name || !slug}
-                className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
+                className="h-9 px-4 bg-black text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
               >
-                <span className="inline-flex items-center gap-2">
-                  {pending && <Spinner size={14} />}
-                  {pending ? "Creating" : "Create"}
-                </span>
+                {pending && <Spinner size={14} />}
+                {pending ? "Creating" : "Create"}
               </button>
             </div>
           </div>

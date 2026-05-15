@@ -87,13 +87,13 @@ export function PromptEditor({
           <div className="flex border border-neutral-300">
             <button
               onClick={() => setPreviewing(false)}
-              className={`px-3 py-1 text-xs ${!previewing ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"}`}
+              className={`px-4 py-1.5 text-sm ${!previewing ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"}`}
             >
               Edit
             </button>
             <button
               onClick={() => setPreviewing(true)}
-              className={`px-3 py-1 text-xs ${previewing ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"}`}
+              className={`px-4 py-1.5 text-sm ${previewing ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"}`}
             >
               Preview
             </button>
@@ -133,7 +133,7 @@ export function PromptEditor({
 
       {variables.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-sm font-semibold mb-2">Variables</h3>
+          <h3 className="text-lg font-semibold mb-2">Variables</h3>
           <div className="border border-neutral-200 bg-white">
             <div className="grid grid-cols-12 px-4 py-2 text-xs text-neutral-500 border-b border-neutral-200 bg-neutral-50">
               <div className="col-span-4">Name</div>
@@ -176,19 +176,17 @@ export function PromptEditor({
               <button
                 onClick={() => setCommitting(false)}
                 disabled={pending}
-                className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+                className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
               >
                 Cancel
               </button>
               <button
                 onClick={commit}
                 disabled={pending || !message.trim()}
-                className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
+                className="h-9 px-4 bg-black text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
               >
-                <span className="inline-flex items-center gap-2">
-                  {pending && <Spinner size={14} />}
-                  {pending ? "Committing" : "Commit"}
-                </span>
+                {pending && <Spinner size={14} />}
+                {pending ? "Committing" : "Commit"}
               </button>
             </div>
           </div>

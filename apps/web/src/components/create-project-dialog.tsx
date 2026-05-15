@@ -36,7 +36,7 @@ export function CreateProjectDialog({ teamId }: { teamId?: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-medium"
+        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-medium cursor-pointer hover:-translate-y-1 hover:transition-all duration-200"
       >
         New project
       </button>

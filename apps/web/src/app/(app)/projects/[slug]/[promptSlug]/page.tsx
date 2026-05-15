@@ -47,11 +47,19 @@ export default async function PromptPage({
         <span>{prompt.slug}</span>
       </div>
 
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">{prompt.name}</h1>
-        {prompt.description && (
-          <p className="text-sm text-neutral-500 mt-1">{prompt.description}</p>
-        )}
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{prompt.name}</h1>
+          {prompt.description && (
+            <p className="text-sm text-neutral-500 mt-1">{prompt.description}</p>
+          )}
+        </div>
+        <Link
+          href={`/projects/${slug}/${promptSlug}/evals`}
+          className="text-sm px-3 py-1.5 border border-neutral-300 hover:bg-neutral-100"
+        >
+          Evals →
+        </Link>
       </div>
 
       <BranchBar

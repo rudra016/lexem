@@ -197,19 +197,17 @@ function CreateBranchModal({
         <button
           onClick={onClose}
           disabled={pending}
-          className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+          className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
         >
           Cancel
         </button>
         <button
           onClick={submit}
           disabled={pending || !name}
-          className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
+          className="h-9 px-4 bg-black text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
         >
-          <span className="inline-flex items-center gap-2">
-            {pending && <Spinner size={14} />}
-            {pending ? "Creating" : "Create branch"}
-          </span>
+          {pending && <Spinner size={14} />}
+          {pending ? "Creating" : "Create branch"}
         </button>
       </div>
     </Modal>
@@ -258,19 +256,17 @@ function DeleteBranchModal({
         <button
           onClick={onClose}
           disabled={pending}
-          className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+          className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
         >
           Cancel
         </button>
         <button
           onClick={submit}
           disabled={pending}
-          className="px-4 py-2 bg-red-700 text-white text-sm font-medium disabled:opacity-50"
+          className="h-9 px-4 bg-red-700 text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
         >
-          <span className="inline-flex items-center gap-2">
-            {pending && <Spinner size={14} />}
-            {pending ? "Deleting" : "Delete"}
-          </span>
+          {pending && <Spinner size={14} />}
+          {pending ? "Deleting" : "Delete"}
         </button>
       </div>
     </Modal>
@@ -392,19 +388,17 @@ function MergeModal({
         <button
           onClick={onClose}
           disabled={pending}
-          className="px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100"
+          className="h-9 px-4 text-sm text-neutral-700 hover:bg-neutral-100"
         >
           Cancel
         </button>
         <button
           onClick={submit}
           disabled={pending || identical || !message.trim()}
-          className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
+          className="h-9 px-4 bg-black text-white text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2"
         >
-          <span className="inline-flex items-center gap-2">
-            {pending && <Spinner size={14} />}
-            {pending ? "Merging" : "Merge"}
-          </span>
+          {pending && <Spinner size={14} />}
+          {pending ? "Merging" : "Merge"}
         </button>
       </div>
     </Modal>
