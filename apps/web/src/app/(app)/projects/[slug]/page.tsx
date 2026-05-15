@@ -29,19 +29,19 @@ export default async function ProjectPage({
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold">{project.name}</h1>
+          <h1 className="text-3xl font-black tracking-tight">{project.name}</h1>
           <p className="text-sm text-neutral-500 mt-1">{prompts.length} prompt{prompts.length === 1 ? "" : "s"}</p>
         </div>
         <CreatePromptDialog projectSlug={project.slug} />
       </div>
 
       {prompts.length === 0 ? (
-        <div className="bg-white border border-dashed border-neutral-300 p-12 text-center">
+        <div className="bg-white border border-dashed border-black/30 p-12 text-center">
           <div className="text-lg font-medium mb-1">No prompts yet</div>
           <p className="text-sm text-neutral-500">Add a prompt to start versioning it.</p>
         </div>
       ) : (
-        <div className="bg-white border border-neutral-200">
+        <div className="bg-white border border-black/10 shadow-[6px_6px_0px_#000]">
           {prompts.map((p, i) => (
             <Link
               key={p.id}

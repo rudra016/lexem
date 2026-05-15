@@ -159,7 +159,7 @@ export function PromptEditor({
           onClick={() => !pending && setCommitting(false)}
         >
           <div
-            className="bg-white shadow-xl w-full max-w-md p-6"
+            className="bg-white border border-black/10 shadow-[6px_6px_0px_#000] w-full max-w-md p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold mb-1">Commit changes</h2>

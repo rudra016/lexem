@@ -139,13 +139,13 @@ export function VersionHistory({
         />
       )}
 
-      <div className="border border-neutral-200 bg-white">
+      <div className="border border-black/10 bg-white shadow-[6px_6px_0px_#000]">
         {versions.map((v, i) => {
           const isOpen = openId === v.id;
           const isCurrent = v.id === currentVersionId;
           const checked = selected.includes(v.id);
           return (
-            <div key={v.id} className={i > 0 ? "border-t border-neutral-200" : ""}>
+            <div key={v.id} className={i > 0 ? "border-t border-black/10" : ""}>
               <div className="flex items-stretch hover:bg-neutral-50">
                 <label className="flex items-center pl-4 pr-2 cursor-pointer">
                   <input
@@ -267,7 +267,7 @@ export function VersionHistory({
           onClick={() => !pending && setRollbackId(null)}
         >
           <div
-            className="bg-white shadow-xl w-full max-w-md p-6"
+            className="bg-white border border-black/10 shadow-[6px_6px_0px_#000] w-full max-w-md p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold mb-1">Rollback?</h2>

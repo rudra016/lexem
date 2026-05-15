@@ -31,7 +31,8 @@
       "Bash(curl -s -X POST http://localhost:3000/api/signup -H 'Content-Type: application/json' -d '{\"email\":\"editor@lexem.dev\",\"password\":\"testpass123\",\"name\":\"Editor\"}')",
       "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process tsx -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(pnpm dlx *)",
-      "Bash(pkill -f \"shadcn\")"
+      "Bash(pkill -f \"shadcn\")",
+      "Bash(pnpm add *)"
     ]
   }
 }

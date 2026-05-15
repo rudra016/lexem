@@ -70,9 +70,33 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members  TeamMember[]
-  projects Project[]
-  invites  TeamInvite[]
+  members      TeamMember[]
+  projects     Project[]
+  invites      TeamInvite[]
+  providerKeys ProviderKey[]
+}
+
+enum Provider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+}
+
+model ProviderKey {
+  id            String   @id @default(cuid())
+  teamId        String
+  provider      Provider
+  label         String
+  encryptedKey  String
+  defaultModel  String?
+  createdById   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  team  Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  evals Eval[]
+
+  @@unique([teamId, provider, label])
 }
 
 enum TeamRole {
@@ -150,11 +174,13 @@ model Branch {
   id        String   @id @default(cuid())
   promptId  String
   name      String
-  headId    String?  @unique
+  headId    String?
   createdAt DateTime @default(now())
 
   prompt Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
   head   Version? @relation("BranchHead", fields: [headId], references: [id])
+
+  @@index([headId])
 
   @@unique([promptId, name])
 }
@@ -176,7 +202,7 @@ model Version {
   author        User?     @relation("VersionAuthor", fields: [authorId], references: [id])
 
   currentOf    Prompt?       @relation("PromptCurrentVersion")
-  branchHead   Branch?       @relation("BranchHead")
+  branchHeads  Branch[]      @relation("BranchHead")
   tags         VersionTag[]
   runs         Run[]
   deployments  Deployment[]
@@ -236,15 +262,18 @@ enum ScorerType {
 }
 
 model Eval {
-  id        String   @id @default(cuid())
-  promptId  String
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(cuid())
+  promptId        String
+  name            String
+  providerKeyId   String?
+  model           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  prompt Prompt     @relation(fields: [promptId], references: [id], onDelete: Cascade)
-  cases  EvalCase[]
-  runs   Run[]
+  prompt      Prompt       @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  providerKey ProviderKey? @relation(fields: [providerKeyId], references: [id], onDelete: SetNull)
+  cases       EvalCase[]
+  runs        Run[]
 }
 
 model EvalCase {
@@ -272,6 +301,8 @@ model Run {
   evalId      String
   versionId   String
   status      RunStatus @default(QUEUED)
+  provider    Provider?
+  model       String?
   score       Float?
   results     Json?
   tokensIn    Int?

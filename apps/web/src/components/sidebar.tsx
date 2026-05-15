@@ -60,21 +60,22 @@ export function Sidebar({
       <div
         className={cn(
           "border-b border-neutral-200 flex items-center",
-          collapsed ? "justify-center px-2 py-4" : "justify-between px-4 py-4"
+          collapsed ? "justify-center px-1 py-4" : "justify-between px-4 py-4"
         )}
       >
         {collapsed ? (
           <button
             onClick={toggle}
             aria-label="Expand sidebar"
-            className=""
+            className="shrink-0"
           >
             <Image
               src="/logo-bg.png"
               alt="Lexem"
-              width={50}
-              height={50}
-              className="shrink-0"
+              width={1229}
+              height={629}
+              style={{ height: 24, width: "auto" }}
+              className="shrink-0 block"
               priority
             />
           </button>
@@ -84,9 +85,10 @@ export function Sidebar({
               <Image
                 src="/logo-bg.png"
                 alt="Lexem"
-                width={50}
-                height={50}
-                className="shrink-0"
+                width={1229}
+                height={629}
+                style={{ height: 28, width: "auto" }}
+                className="shrink-0 block"
                 priority
               />
               <div className="min-w-0">

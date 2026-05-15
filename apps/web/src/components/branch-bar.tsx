@@ -40,7 +40,7 @@ export function BranchBar({
   const canMerge = !isMain && Boolean(mainBranch);
 
   return (
-    <div className="mb-4 flex items-center justify-between border border-neutral-200 bg-white px-3 py-2">
+    <div className="mb-4 flex items-center justify-between border border-black/10 bg-white px-3 py-2 shadow-[4px_4px_0px_#000]">
       <div className="relative">
         <button
           onClick={() => setMenuOpen((o) => !o)}
@@ -420,7 +420,7 @@ function Modal({
       onClick={onClose}
     >
       <div
-        className={`bg-white shadow-xl w-full ${wide ? "max-w-3xl" : "max-w-md"} p-6 max-h-[90vh] overflow-auto`}
+        className={`bg-white border border-black/10 shadow-[6px_6px_0px_#000] w-full ${wide ? "max-w-3xl" : "max-w-md"} p-6 max-h-[90vh] overflow-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

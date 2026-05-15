@@ -49,14 +49,14 @@ export default async function PromptPage({
 
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{prompt.name}</h1>
+          <h1 className="text-3xl font-black tracking-tight">{prompt.name}</h1>
           {prompt.description && (
             <p className="text-sm text-neutral-500 mt-1">{prompt.description}</p>
           )}
         </div>
         <Link
           href={`/projects/${slug}/${promptSlug}/evals`}
-          className="text-sm px-3 py-1.5 border border-neutral-300 hover:bg-neutral-100"
+          className="h-10 px-4 border border-black bg-white text-black text-sm font-medium inline-flex items-center gap-2 transition-colors hover:bg-black hover:text-white"
         >
           Evals →
         </Link>

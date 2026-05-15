@@ -36,7 +36,7 @@ export function CreateProjectDialog({ teamId }: { teamId?: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-2 bg-black text-white rounded-lg text-sm font-medium cursor-pointer hover:-translate-y-1 hover:transition-all duration-200"
+        className="h-10 px-4 bg-black text-white text-sm font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all hover:translate-x-[2px] hover:translate-y-[2px]"
       >
         New project
       </button>
@@ -47,7 +47,7 @@ export function CreateProjectDialog({ teamId }: { teamId?: string }) {
           onClick={() => !pending && setOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6"
+            className="bg-white border border-black/10 shadow-[6px_6px_0px_#000] w-full max-w-md p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-semibold mb-4">New project</h2>

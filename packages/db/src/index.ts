@@ -11,5 +11,5 @@ if (process.env.NODE_ENV !== "production") {
   globalThis.__lexemPrisma = prisma;
 }
 
-export { Prisma, TeamRole, ScorerType, RunStatus } from "@prisma/client";
+export { Prisma, TeamRole, ScorerType, RunStatus, Provider } from "@prisma/client";
 export type * from "@prisma/client";

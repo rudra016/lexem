@@ -9,22 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
     "@auth/prisma-adapter": "^2.7.4",
+    "@google/generative-ai": "^0.21.0",
     "@lexem/db": "workspace:*",
-    "@openuidev/react-ui": "latest",
     "@openuidev/react-headless": "latest",
     "@openuidev/react-lang": "latest",
+    "@openuidev/react-ui": "latest",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "diff": "^7.0.0",
     "lucide-react": "^0.469.0",
-    "tailwind-merge": "^2.5.5",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.31",
     "openai": "^6.22.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^2.5.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
