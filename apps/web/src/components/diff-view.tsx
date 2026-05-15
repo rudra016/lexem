@@ -1,7 +1,10 @@
 "use client";
 
 import { diffLines, diffWordsWithSpace } from "diff";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { Sparkles } from "lucide-react";
+import { generateChangelogAction } from "@/app/(app)/changelog-actions";
+import { Spinner } from "@/components/spinner";
 
 type Mode = "inline" | "split";
 
@@ -17,6 +20,26 @@ export function DiffView({
   toLabel: string;
 }) {
   const [mode, setMode] = useState<Mode>("split");
+  const [summary, setSummary] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+
+  function summarize() {
+    setSummaryError(null);
+    start(async () => {
+      try {
+        const result = await generateChangelogAction({
+          fromContent: from,
+          toContent: to,
+          fromLabel,
+          toLabel,
+        });
+        setSummary(result);
+      } catch (e) {
+        setSummaryError(e instanceof Error ? e.message : "Failed");
+      }
+    });
+  }
 
   const lineParts = useMemo(() => diffLines(from, to), [from, to]);
   const wordParts = useMemo(() => diffWordsWithSpace(from, to), [from, to]);
@@ -44,20 +67,45 @@ export function DiffView({
           <span className="text-green-700">+{stats.added}</span>
           <span className="text-red-700">−{stats.removed}</span>
         </div>
-        <div className="flex border border-neutral-300">
-          {(["inline", "split"] as Mode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={`px-3 py-1 text-xs ${
-                mode === m ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"
-              }`}
-            >
-              {m === "inline" ? "Inline" : "Side-by-side"}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={summarize}
+            disabled={pending || from === to}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-neutral-300 bg-white hover:bg-neutral-100 disabled:opacity-50"
+          >
+            {pending ? <Spinner size={12} /> : <Sparkles size={12} />}
+            {pending ? "Summarizing" : summary ? "Regenerate" : "Summarize"}
+          </button>
+          <div className="flex border border-neutral-300">
+            {(["inline", "split"] as Mode[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`px-3 py-1 text-xs ${
+                  mode === m ? "bg-neutral-900 text-white" : "bg-white text-neutral-700"
+                }`}
+              >
+                {m === "inline" ? "Inline" : "Side-by-side"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
+      {(summary || summaryError) && (
+        <div className="border-b border-neutral-200 px-4 py-3 bg-amber-50">
+          <div className="flex items-start gap-2">
+            <Sparkles size={14} className="text-amber-700 mt-1 shrink-0" />
+            <div className="text-sm text-neutral-800 leading-relaxed">
+              {summaryError ? (
+                <span className="text-red-700">{summaryError}</span>
+              ) : (
+                summary
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {from === to ? (
         <div className="p-5 text-sm text-neutral-500">No changes.</div>

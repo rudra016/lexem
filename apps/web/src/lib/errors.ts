@@ -10,6 +10,7 @@ const UNIQUE_FIELD_MESSAGES: Record<string, string> = {
   "Team_slug_key": "That team slug is taken.",
   "User_email_key": "An account with that email already exists.",
   "VersionTag_versionId_name_key": "That tag already exists on this version.",
+  "Branch_promptId_name_key": "A branch with that name already exists on this prompt.",
 };
 
 export function rethrowAsFriendly(err: unknown): never {

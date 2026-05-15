@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createProjectAction } from "@/app/(app)/actions";
+import { Spinner } from "@/components/spinner";
 
 export function CreateProjectDialog({ teamId }: { teamId?: string }) {
   const [open, setOpen] = useState(false);
@@ -85,7 +86,10 @@ export function CreateProjectDialog({ teamId }: { teamId?: string }) {
                 disabled={pending || !name || !slug}
                 className="px-4 py-2 bg-black text-white rounded-lg text-sm font-medium disabled:opacity-50"
               >
-                {pending ? "Creating…" : "Create"}
+                <span className="inline-flex items-center gap-2">
+                  {pending && <Spinner size={14} />}
+                  {pending ? "Creating" : "Create"}
+                </span>
               </button>
             </div>
           </div>

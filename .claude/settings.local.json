@@ -29,7 +29,9 @@
       "Bash(curl -s -c /tmp/c.txt http://localhost:3000/api/auth/csrf)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4000/health)",
       "Bash(curl -s -X POST http://localhost:3000/api/signup -H 'Content-Type: application/json' -d '{\"email\":\"editor@lexem.dev\",\"password\":\"testpass123\",\"name\":\"Editor\"}')",
-      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process tsx -ErrorAction SilentlyContinue | Stop-Process -Force\")"
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Get-Process tsx -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(pnpm dlx *)",
+      "Bash(pkill -f \"shadcn\")"
     ]
   }
 }

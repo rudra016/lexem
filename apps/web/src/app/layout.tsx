@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Manrope, JetBrains_Mono } from "next/font/google";
+import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/session-provider";
 
-const playfair = Playfair_Display({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-playfair",
+  weight: "400",
+  variable: "--font-instrument-serif",
   display: "swap",
 });
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${manrope.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${instrumentSerif.variable} ${inter.variable} ${jetbrains.variable}`}>
       <body>
         <AuthProvider>{children}</AuthProvider>
       </body>

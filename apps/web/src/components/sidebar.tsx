@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -13,11 +14,12 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
+  User as UserIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Team = { id: string; name: string; slug: string };
-type User = { id: string; email: string; name?: string | null };
+type User = { id: string; email: string; name?: string | null; image?: string | null };
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -61,21 +63,48 @@ export function Sidebar({
           collapsed ? "justify-center px-2 py-4" : "justify-between px-4 py-4"
         )}
       >
-        {!collapsed && (
-          <div>
-            <div className="font-serif font-semibold text-lg leading-none">Lexem</div>
-            {activeTeam && (
-              <div className="text-xs text-neutral-500 mt-1">{activeTeam.name}</div>
-            )}
-          </div>
+        {collapsed ? (
+          <button
+            onClick={toggle}
+            aria-label="Expand sidebar"
+            className="p-1 hover:bg-neutral-100"
+          >
+            <Image
+              src="/logo.png"
+              alt="Lexem"
+              width={40}
+              height={40}
+              className="shrink-0"
+              priority
+            />
+          </button>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 min-w-0">
+              <Image
+                src="/logo.png"
+                alt="Lexem"
+                width={40}
+                height={40}
+                className="shrink-0"
+                priority
+              />
+              <div className="min-w-0">
+                <div className="font-serif font-semibold text-lg leading-none tracking-wide">Lexem</div>
+                {activeTeam && (
+                  <div className="text-xs text-neutral-500 mt-1 truncate">{activeTeam.name}</div>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={toggle}
+              aria-label="Collapse sidebar"
+              className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
+            >
+              <PanelLeftClose size={16} />
+            </button>
+          </>
         )}
-        <button
-          onClick={toggle}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
-        >
-          {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-        </button>
       </div>
 
       <nav className="flex-1 px-2 py-3 space-y-0.5">
@@ -105,8 +134,21 @@ export function Sidebar({
 
       <div className="border-t border-neutral-200 p-2">
         {!collapsed && (
-          <div className="px-2.5 py-1.5 text-xs text-neutral-500 truncate">
-            {user.name ?? user.email}
+          <div className="px-2.5 py-1.5 flex items-center gap-2 text-sm text-neutral-500">
+            {user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={user.image}
+                alt=""
+                className="w-5 h-5 shrink-0 object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="w-5 h-5 flex items-center justify-center bg-neutral-200 text-neutral-600 shrink-0">
+                <UserIcon size={12} />
+              </span>
+            )}
+            <span className="truncate">{user.name ?? user.email}</span>
           </div>
         )}
         <button

@@ -2,26 +2,40 @@ import { requireUser } from "@/lib/session";
 import { getPromptForUser } from "@/lib/authz";
 import { PromptEditor } from "@/components/prompt-editor";
 import { VersionHistory } from "@/components/version-history";
+import { BranchBar } from "@/components/branch-bar";
 import { prisma } from "@lexem/db";
+import { MAIN_BRANCH, ensureMainBranch, listBranches } from "@/lib/branches";
 import Link from "next/link";
 
 export default async function PromptPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string; promptSlug: string }>;
+  searchParams: Promise<{ branch?: string }>;
 }) {
   const { slug, promptSlug } = await params;
+  const { branch: branchParam } = await searchParams;
+  const branchName = branchParam || MAIN_BRANCH;
+
   const user = await requireUser();
   const prompt = await getPromptForUser(user.id, slug, promptSlug);
 
+  await ensureMainBranch(prompt.id, prompt.currentVersionId);
+  const branches = await listBranches(prompt.id);
+  const branch = branches.find((b) => b.name === branchName) ?? branches[0];
+
   const versions = await prisma.version.findMany({
-    where: { promptId: prompt.id },
+    where: { promptId: prompt.id, branchName: branch.name },
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { name: true, email: true } },
       tags: { select: { id: true, name: true }, orderBy: { createdAt: "asc" } },
     },
   });
+
+  const initialContent = branch.head?.content ?? "";
+  const isMain = branch.name === MAIN_BRANCH;
 
   return (
     <div className="max-w-5xl mx-auto px-8 py-8">
@@ -40,15 +54,31 @@ export default async function PromptPage({
         )}
       </div>
 
+      <BranchBar
+        projectSlug={slug}
+        promptSlug={promptSlug}
+        currentBranch={branch.name}
+        branches={branches.map((b) => ({
+          id: b.id,
+          name: b.name,
+          headId: b.headId,
+          headContent: b.head?.content ?? "",
+        }))}
+        currentVersionId={prompt.currentVersionId}
+      />
+
       <PromptEditor
         projectSlug={slug}
         promptSlug={promptSlug}
-        initialContent={prompt.currentVersion?.content ?? ""}
-        hasVersion={Boolean(prompt.currentVersion)}
+        branchName={branch.name}
+        initialContent={initialContent}
+        hasVersion={Boolean(branch.head)}
       />
 
       <div className="mt-10">
-        <h2 className="text-lg font-semibold mb-3">Versions</h2>
+        <h2 className="text-lg font-semibold mb-3">
+          Versions {!isMain && <span className="text-sm text-neutral-500 font-normal">on <span className="font-mono">{branch.name}</span></span>}
+        </h2>
         <VersionHistory
           versions={versions.map((v) => ({
             id: v.id,
@@ -58,7 +88,7 @@ export default async function PromptPage({
             author: v.author,
             tags: v.tags,
           }))}
-          currentVersionId={prompt.currentVersionId}
+          currentVersionId={branch.headId}
           projectSlug={slug}
           promptSlug={promptSlug}
         />

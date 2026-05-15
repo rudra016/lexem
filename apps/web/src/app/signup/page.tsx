@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
+import { Spinner } from "@/components/spinner";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -84,7 +85,10 @@ export default function SignupPage() {
             disabled={loading}
             className="w-full py-2.5 bg-black text-white rounded-lg text-sm font-medium disabled:opacity-50"
           >
-            {loading ? "Creating…" : "Create account"}
+            <span className="inline-flex items-center justify-center gap-2">
+              {loading && <Spinner size={14} />}
+              {loading ? "Creating" : "Create account"}
+            </span>
           </button>
         </form>
 

@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { DiffView } from "@/components/diff-view";
 import { rollbackToVersionAction, addTagAction, removeTagAction } from "@/app/(app)/actions";
 import { X } from "lucide-react";
+import { Spinner } from "@/components/spinner";
 
 type Tag = { id: string; name: string };
 
@@ -289,7 +290,10 @@ export function VersionHistory({
                 disabled={pending}
                 className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
               >
-                {pending ? "Rolling back…" : "Rollback"}
+                <span className="inline-flex items-center gap-2">
+                  {pending && <Spinner size={14} />}
+                  {pending ? "Rolling back" : "Rollback"}
+                </span>
               </button>
             </div>
           </div>

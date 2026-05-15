@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition, useMemo } from "react";
 import { commitVersionAction } from "@/app/(app)/actions";
 import { parseVariables, renderWithDefaults, VAR_RE } from "@/lib/variables";
+import { Spinner } from "@/components/spinner";
 
 function escapeHtml(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -27,11 +28,13 @@ function highlight(text: string) {
 export function PromptEditor({
   projectSlug,
   promptSlug,
+  branchName,
   initialContent,
   hasVersion,
 }: {
   projectSlug: string;
   promptSlug: string;
+  branchName: string;
   initialContent: string;
   hasVersion: boolean;
 }) {
@@ -61,6 +64,7 @@ export function PromptEditor({
         await commitVersionAction({
           projectSlug,
           promptSlug,
+          branchName,
           content,
           commitMessage: message,
         });
@@ -181,7 +185,10 @@ export function PromptEditor({
                 disabled={pending || !message.trim()}
                 className="px-4 py-2 bg-black text-white text-sm font-medium disabled:opacity-50"
               >
-                {pending ? "Committing…" : "Commit"}
+                <span className="inline-flex items-center gap-2">
+                  {pending && <Spinner size={14} />}
+                  {pending ? "Committing" : "Commit"}
+                </span>
               </button>
             </div>
           </div>

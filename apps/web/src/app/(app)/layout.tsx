@@ -8,9 +8,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const collapsed = (await cookies()).get("sb_collapsed")?.value === "1";
 
   return (
-    <div className="min-h-screen flex bg-neutral-50">
+    <div className="h-screen flex bg-neutral-50 overflow-hidden">
       <Sidebar user={user} teams={teams} initialCollapsed={collapsed} />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }
