@@ -123,7 +123,7 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
               )}
             </Link>
             <Link
-              href="https://github.com/rudra016/WebDev-OpenSource"
+              href="https://github.com/rudra016/lexem"
               className="h-12 px-6 border border-black bg-white text-black text-sm font-medium inline-flex items-center justify-center transition-colors hover:bg-black hover:text-white"
             >
               View on GitHub
@@ -327,7 +327,7 @@ function OpenSourceCTA({ isAuthed }: { isAuthed: boolean }) {
 
         <div className="flex flex-col gap-3 shrink-0 md:items-end">
           <Link
-            href="https://github.com/rudra016/WebDev-OpenSource"
+            href="https://github.com/rudra016/lexem"
             className="h-12 px-6 bg-white text-black text-sm font-medium inline-flex items-center justify-center gap-2 transition-transform duration-100 active:scale-[0.97]"
           >
             <Github size={16} /> Star on GitHub
@@ -358,7 +358,7 @@ function SiteFooter() {
     {
       heading: "Open source",
       links: [
-        { label: "GitHub", href: "https://github.com/rudra016/WebDev-OpenSource" },
+        { label: "GitHub", href: "https://github.com/rudra016/lexem" },
         { label: "Self-host", href: "/docs/self-host" },
         { label: "License", href: "/docs/license" },
       ],
@@ -402,7 +402,7 @@ function SiteFooter() {
               <Twitter size={15} />
             </SocialLink>
             <SocialLink
-              href="https://github.com/rudra016/WebDev-OpenSource"
+              href="https://github.com/rudra016/lexem"
               label="GitHub"
             >
               <Github size={15} />
