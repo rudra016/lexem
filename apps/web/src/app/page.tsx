@@ -87,8 +87,8 @@ function SiteNav({ isAuthed }: { isAuthed: boolean }) {
 function Hero({ isAuthed }: { isAuthed: boolean }) {
   return (
     <section className="relative flex-1 overflow-hidden">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(0,960px)] items-center min-h-[calc(100vh-5rem)]">
-        <div className="pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-0 py-16 md:py-24 max-w-3xl">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(0,735px)] items-center min-h-[calc(100vh-5rem)]">
+        <div className="pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-0 py-16 md:py-24 max-w-4xl">
           <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-600 border border-black/15 bg-white px-2.5 py-1">
             Open source · Bring your own keys
           </span>
@@ -155,7 +155,7 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
             alt=""
             fill
             sizes="(min-width: 768px) 960px, 100vw"
-            className="object-contain object-right pointer-events-none select-none"
+            className="object-contain object-right pointer-events-none select-none translate-x-10"
             priority
           />
         </div>
@@ -358,7 +358,7 @@ function SiteFooter() {
       heading: "Connect",
       links: [
         { label: "Twitter", href: "https://x.com/rudra016" },
-        { label: "LinkedIn", href: "https://www.linkedin.com/in/rudra016/" },
+        { label: "LinkedIn", href: "https://www.linkedin.com/in/rudra-kumar-897264227/" },
         { label: "Contact", href: "mailto:rudra619kumar@gmail.com" },
       ],
     },
@@ -399,7 +399,7 @@ function SiteFooter() {
               <Github size={15} />
             </SocialLink>
             <SocialLink
-              href="https://www.linkedin.com/in/rudra016/"
+              href="https://www.linkedin.com/in/rudra-kumar-897264227/"
               label="LinkedIn"
             >
               <Linkedin size={15} />

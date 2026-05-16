@@ -140,7 +140,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/hero.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Lexem — Git for AI prompts. Version control, evals, and safe deploys.",
@@ -151,7 +151,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/hero.png"],
+    images: ["/og-image.png"],
     creator: "@lexemhq",
     site: "@lexemhq",
   },
@@ -184,9 +184,9 @@ const jsonLd = {
         height: 512,
       },
       sameAs: [
-        "https://github.com/lexem",
-        "https://twitter.com/lexemhq",
-        "https://www.linkedin.com/company/lexem",
+        "https://github.com/rudra016",
+        "https://twitter.com/sudo_rudra",
+        "https://www.linkedin.com/in/rudra-kumar-897264227/",
       ],
     },
     {
