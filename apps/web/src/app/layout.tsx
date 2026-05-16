@@ -118,6 +118,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  verification: {
+    google: "asInysg43aczvqBQT4Ik6wBWJwnNkT2dacyqqbpeA3k",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

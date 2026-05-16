@@ -60,12 +60,21 @@ function SiteNav({ isAuthed }: { isAuthed: boolean }) {
         </nav>
 
         <div className="flex items-center gap-3 shrink-0">
-          <GitHubStarsButton
-            username="rudra016"
-            repo="lexem"
-            variant="outline"
-            size="lg"
-          />
+          <a
+            href="https://github.com/rudra016/lexem"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Star Lexem on GitHub (opens in a new tab)"
+            className="contents"
+          >
+            <GitHubStarsButton
+              username="rudra016"
+              repo="lexem"
+              variant="outline"
+              size="lg"
+              tabIndex={-1}
+            />
+          </a>
           <Link
             href={isAuthed ? "/dashboard" : "/login"}
             className="h-10 px-5 bg-black text-white text-[15px] font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-neutral-800"

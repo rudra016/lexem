@@ -9,6 +9,13 @@
   Git for your prompts — with evals, rollback, and deployment guardrails built in.
 </p>
 
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#features">Features</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="CODE_OF_CONDUCT.md">Code of conduct</a>
+</p>
+
 ---
 
 ## What it is
@@ -34,17 +41,24 @@ Lexem brings software engineering discipline to the one artifact that controls y
 - Score history chart per suite with automatic regression alerts (drop ≥ 5 points)
 - Pre-built templates: customer support, summarisation, JSON extraction, tone consistency, refusals
 
+**Environments & deploys**
+
+- Dev, staging, and production environments per project, seeded automatically
+- Promote any prompt version to an environment in one click; promotion order is enforced (`dev → staging → production`)
+- Optional per-environment approval gate — pending requests appear at the top of the page for a teammate to approve or reject
+- Full deployment audit log
+
+**Team roles & invites**
+
+- Four roles: Viewer, Editor, Admin, Owner. Editor can commit and run evals; Admin can promote and manage provider keys; Owner can manage Admins.
+- Invite teammates by email — generates a single-use, time-limited link to share
+- Email/password and Google OAuth sign-in
+
 **Multi-model, bring-your-own-key**
 
 - OpenAI, Anthropic, and Google supported out of the box
 - API keys encrypted at rest (AES-256-GCM) and managed per team in Settings
 - Each eval suite can pin a provider key and model
-
-**Built for teams**
-
-- Email/password and Google OAuth sign-in
-- Personal team created automatically on first sign-up
-- Project / prompt / version model maps cleanly to how product teams already think
 
 ## Tech stack
 
@@ -54,7 +68,7 @@ Lexem brings software engineering discipline to the one artifact that controls y
 | API | Hono on Node.js |
 | Database | PostgreSQL via Prisma 6 |
 | Auth | Auth.js v5 with Prisma adapter |
-| Styling | Tailwind v4, custom brutalist tokens |
+| Styling | Tailwind v4 |
 | Charts | Recharts |
 | Encryption | AES-256-GCM via Node crypto |
 | Package manager | pnpm workspaces |
@@ -127,15 +141,15 @@ Sign up, then go to **Settings** and add at least one provider key (OpenAI, Anth
 lexem/
 ├── apps/
 │   ├── web/        # Next.js app (UI + server actions)
-│   └── api/        # Hono REST API for the SDK and external consumers
+│   └── api/        # Hono REST API
 ├── packages/
 │   ├── db/         # Prisma schema, migrations, client export
-│   ├── sdk/        # TypeScript SDK (P3, in progress)
+│   ├── sdk/        # TypeScript SDK
 │   └── types/      # Shared types
 └── pnpm-workspace.yaml
 ```
 
-The web app drives the dashboard, editor, evals, and settings. The API is a thin REST surface intended for the SDK and CI integrations.
+The web app drives the dashboard, editor, evals, environments, and settings. The API is a thin REST surface intended for the SDK and CI integrations.
 
 ## Provider keys
 
@@ -149,16 +163,6 @@ Adding a key:
 
 Per-suite overrides are supported — open a suite's settings to choose a different key or model for that suite specifically.
 
-## Status
-
-Roughly tracking the [CLAUDE.md](./CLAUDE.md) roadmap.
-
-- **Phase 0 — Foundation** — done
-- **Phase 1 — Version Control** — done (commit, diff, branch, merge, tag, rollback, AI change summary)
-- **Phase 2 — Evals Engine** — done except async queue
-- **Phase 3 — Deploy & Integrations** — in progress (environments, SDK, GitHub Actions, webhooks)
-- **Phase 4 — Intelligence Layer** — planned
-
 ## Deploying
 
 The web app builds cleanly on Vercel. The build command runs `prisma generate` before `next build`:
@@ -170,7 +174,7 @@ pnpm --filter @lexem/db generate && next build
 Required env vars in production:
 
 - `DATABASE_URL`
-- `AUTH_SECRET` (or `ENCRYPTION_KEY` for keys + `AUTH_SECRET` for sessions, both recommended)
+- `AUTH_SECRET` (and `ENCRYPTION_KEY` for provider-key encryption — both recommended)
 - `NEXTAUTH_URL` set to your deployed origin
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` if using Google OAuth
 
@@ -178,20 +182,10 @@ For Google OAuth, add `https://your-domain/api/auth/callback/google` as an autho
 
 ## Contributing
 
-Lexem is open source. PRs welcome, especially:
+Contributions are welcome — bug fixes, new eval templates, additional provider integrations, SDK work, and DX polish are all great places to start. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, and PR guidelines.
 
-- Additional eval templates
-- Provider integrations beyond OpenAI / Anthropic / Google
-- SDK packages (Python is high on the list)
-- Bug fixes and DX polish
-
-Before opening a PR, please run:
-
-```bash
-pnpm --filter web exec tsc --noEmit
-pnpm --filter web build
-```
+By participating in this project you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-TBD. Treat the repo as source-available until a license file is added.
+[MIT](LICENSE) © Rudra Sharma and Lexem contributors.
