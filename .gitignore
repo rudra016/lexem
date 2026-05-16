@@ -8,3 +8,4 @@ dist
 *.log
 .turbo
 .pnpm-store
+.claude/settings.local.json

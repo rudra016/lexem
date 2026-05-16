@@ -32,7 +32,15 @@ export default async function ProjectPage({
           <h1 className="text-3xl font-black tracking-tight">{project.name}</h1>
           <p className="text-sm text-neutral-500 mt-1">{prompts.length} prompt{prompts.length === 1 ? "" : "s"}</p>
         </div>
-        <CreatePromptDialog projectSlug={project.slug} />
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/projects/${project.slug}/environments`}
+            className="h-10 px-4 border border-black bg-white text-black text-sm font-medium inline-flex items-center gap-2 transition-colors hover:bg-black hover:text-white"
+          >
+            Environments →
+          </Link>
+          <CreatePromptDialog projectSlug={project.slug} />
+        </div>
       </div>
 
       {prompts.length === 0 ? (

@@ -161,11 +161,13 @@ model Prompt {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  currentVersion Version?  @relation("PromptCurrentVersion", fields: [currentVersionId], references: [id])
-  versions       Version[] @relation("PromptVersions")
-  branches       Branch[]
-  evals          Eval[]
+  project            Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  currentVersion     Version?             @relation("PromptCurrentVersion", fields: [currentVersionId], references: [id])
+  versions           Version[]            @relation("PromptVersions")
+  branches           Branch[]
+  evals              Eval[]
+  promptEnvironments PromptEnvironment[]
+  deployments        Deployment[]
 
   @@unique([projectId, slug])
 }
@@ -201,12 +203,12 @@ model Version {
   children      Version[] @relation("VersionParent")
   author        User?     @relation("VersionAuthor", fields: [authorId], references: [id])
 
-  currentOf    Prompt?       @relation("PromptCurrentVersion")
-  branchHeads  Branch[]      @relation("BranchHead")
-  tags         VersionTag[]
-  runs         Run[]
-  deployments  Deployment[]
-  environments Environment[]
+  currentOf          Prompt?              @relation("PromptCurrentVersion")
+  branchHeads        Branch[]             @relation("BranchHead")
+  tags               VersionTag[]
+  runs               Run[]
+  deployments        Deployment[]
+  promptEnvironments PromptEnvironment[]
 
   @@index([promptId, createdAt])
 }
@@ -225,32 +227,61 @@ model VersionTag {
 // ---------- Environments & Deploys ----------
 
 model Environment {
-  id              String   @id @default(cuid())
-  projectId       String
-  name            String
-  activeVersionId String?
-  scoreThreshold  Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String   @id @default(cuid())
+  projectId        String
+  name             String
+  scoreThreshold   Int?
+  requiresApproval Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  activeVersion Version?     @relation(fields: [activeVersionId], references: [id], map: "Environment_activeVersionId_fkey")
-  deployments   Deployment[]
+  project             Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deployments         Deployment[]
+  promptEnvironments  PromptEnvironment[]
 
   @@unique([projectId, name])
 }
 
+model PromptEnvironment {
+  id              String   @id @default(cuid())
+  promptId        String
+  environmentId   String
+  activeVersionId String?
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  prompt        Prompt       @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  environment   Environment  @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  activeVersion Version?     @relation(fields: [activeVersionId], references: [id], onDelete: SetNull)
+
+  @@unique([promptId, environmentId])
+  @@index([environmentId])
+}
+
+enum DeploymentStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  REJECTED
+}
+
 model Deployment {
-  id            String   @id @default(cuid())
+  id            String           @id @default(cuid())
   environmentId String
+  promptId      String
   versionId     String
+  status        DeploymentStatus @default(ACTIVE)
   deployedBy    String?
-  createdAt     DateTime @default(now())
+  approvedBy    String?
+  approvedAt    DateTime?
+  createdAt     DateTime         @default(now())
 
   environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  prompt      Prompt      @relation(fields: [promptId], references: [id], onDelete: Cascade)
   version     Version     @relation(fields: [versionId], references: [id])
 
   @@index([environmentId, createdAt])
+  @@index([promptId, environmentId, createdAt])
+  @@index([environmentId, status])
 }
 
 // ---------- Evals & Runs ----------

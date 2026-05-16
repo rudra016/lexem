@@ -4,6 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma, Provider } from "@lexem/db";
 import { requireUser, getUserTeams } from "@/lib/session";
+import { requireRole } from "@/lib/authz";
 import { rethrowAsFriendly } from "@/lib/errors";
 import { encrypt } from "@/lib/crypto";
 
@@ -11,6 +12,12 @@ async function getActiveTeamId(userId: string) {
   const teams = await getUserTeams(userId);
   if (teams.length === 0) throw new Error("No team found");
   return teams[0].id;
+}
+
+async function getActiveTeamIdAtLeast(userId: string, minRole: "EDITOR" | "ADMIN" | "OWNER") {
+  const teamId = await getActiveTeamId(userId);
+  await requireRole(userId, teamId, minRole);
+  return teamId;
 }
 
 const ProviderEnum = z.enum(["OPENAI", "ANTHROPIC", "GOOGLE"]);
@@ -27,7 +34,7 @@ export async function createProviderKeyAction(
 ) {
   const user = await requireUser();
   const parsed = CreateProviderKeyInput.parse(input);
-  const teamId = await getActiveTeamId(user.id);
+  const teamId = await getActiveTeamIdAtLeast(user.id, "ADMIN");
 
   try {
     await prisma.providerKey.create({
@@ -59,7 +66,7 @@ export async function updateProviderKeyAction(
 ) {
   const user = await requireUser();
   const parsed = UpdateProviderKeyInput.parse(input);
-  const teamId = await getActiveTeamId(user.id);
+  const teamId = await getActiveTeamIdAtLeast(user.id, "ADMIN");
 
   const data: Record<string, unknown> = {};
   if (parsed.label !== undefined) data.label = parsed.label;
@@ -84,7 +91,7 @@ export async function deleteProviderKeyAction(
 ) {
   const user = await requireUser();
   const parsed = DeleteProviderKeyInput.parse(input);
-  const teamId = await getActiveTeamId(user.id);
+  const teamId = await getActiveTeamIdAtLeast(user.id, "ADMIN");
 
   await prisma.providerKey.deleteMany({ where: { id: parsed.id, teamId } });
   revalidatePath("/settings");

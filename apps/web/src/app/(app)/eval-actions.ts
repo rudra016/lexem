@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { prisma, Prisma, ScorerType, Provider } from "@lexem/db";
 import { requireUser } from "@/lib/session";
-import { getPromptForUser } from "@/lib/authz";
+import { requirePromptRole } from "@/lib/authz";
 import { rethrowAsFriendly } from "@/lib/errors";
 import { runCase, type CaseResult } from "@/lib/eval-runner";
 import { decrypt } from "@/lib/crypto";
@@ -22,7 +22,7 @@ const CreateEvalInput = z.object({
 export async function createEvalAction(input: z.infer<typeof CreateEvalInput>) {
   const user = await requireUser();
   const parsed = CreateEvalInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   try {
     const evalRow = await prisma.eval.create({
@@ -52,7 +52,7 @@ const UpdateEvalInput = z.object({
 export async function updateEvalAction(input: z.infer<typeof UpdateEvalInput>) {
   const user = await requireUser();
   const parsed = UpdateEvalInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const data: Record<string, unknown> = {};
   if (parsed.name !== undefined) data.name = parsed.name;
@@ -79,7 +79,7 @@ const DeleteEvalInput = z.object({
 export async function deleteEvalAction(input: z.infer<typeof DeleteEvalInput>) {
   const user = await requireUser();
   const parsed = DeleteEvalInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   await prisma.eval.deleteMany({
     where: { id: parsed.evalId, promptId: prompt.id },
@@ -106,7 +106,7 @@ const CreateCaseInput = CaseFieldsSchema.extend({
 export async function createCaseAction(input: z.infer<typeof CreateCaseInput>) {
   const user = await requireUser();
   const parsed = CreateCaseInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const evalRow = await prisma.eval.findFirst({
     where: { id: parsed.evalId, promptId: prompt.id },
@@ -138,7 +138,7 @@ const UpdateCaseInput = CaseFieldsSchema.extend({
 export async function updateCaseAction(input: z.infer<typeof UpdateCaseInput>) {
   const user = await requireUser();
   const parsed = UpdateCaseInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const updated = await prisma.evalCase.updateMany({
     where: { id: parsed.caseId, eval: { promptId: prompt.id } },
@@ -166,7 +166,7 @@ const DeleteCaseInput = z.object({
 export async function deleteCaseAction(input: z.infer<typeof DeleteCaseInput>) {
   const user = await requireUser();
   const parsed = DeleteCaseInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   await prisma.evalCase.deleteMany({
     where: { id: parsed.caseId, eval: { promptId: prompt.id } },
@@ -190,7 +190,7 @@ export async function createEvalFromTemplateAction(
 ) {
   const user = await requireUser();
   const parsed = CreateFromTemplateInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const template = EVAL_TEMPLATES.find((t) => t.id === parsed.templateId);
   if (!template) throw new Error("Template not found");
@@ -235,7 +235,7 @@ const RunEvalInput = z.object({
 export async function runEvalAction(input: z.infer<typeof RunEvalInput>) {
   const user = await requireUser();
   const parsed = RunEvalInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const evalRow = await prisma.eval.findFirst({
     where: { id: parsed.evalId, promptId: prompt.id },

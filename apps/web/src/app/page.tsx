@@ -62,7 +62,7 @@ function SiteNav({ isAuthed }: { isAuthed: boolean }) {
         <div className="flex items-center gap-3 shrink-0">
           <GitHubStarsButton
             username="rudra016"
-            repo="WebDev-OpenSource"
+            repo="lexem"
             variant="outline"
             size="lg"
           />

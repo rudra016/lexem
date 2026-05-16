@@ -5,10 +5,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma, Prisma } from "@lexem/db";
 import { requireUser } from "@/lib/session";
-import { getProjectForUser, getPromptForUser } from "@/lib/authz";
+import {
+  requireRole,
+  requireProjectRole,
+  requirePromptRole,
+} from "@/lib/authz";
 import { rethrowAsFriendly } from "@/lib/errors";
 import { parseVariables } from "@/lib/variables";
 import { MAIN_BRANCH, ensureMainBranch } from "@/lib/branches";
+import { ensureDefaultEnvironments } from "@/lib/environments";
 
 const CreateProjectInput = z.object({
   teamId: z.string(),
@@ -24,15 +29,13 @@ export async function createProjectAction(input: z.infer<typeof CreateProjectInp
   const user = await requireUser();
   const parsed = CreateProjectInput.parse(input);
 
-  const membership = await prisma.teamMember.findFirst({
-    where: { teamId: parsed.teamId, userId: user.id },
-  });
-  if (!membership) throw new Error("Not a member of this team");
+  await requireRole(user.id, parsed.teamId, "EDITOR");
 
   try {
     const project = await prisma.project.create({
       data: { teamId: parsed.teamId, name: parsed.name, slug: parsed.slug },
     });
+    await ensureDefaultEnvironments(project.id);
     revalidatePath("/dashboard");
     return project;
   } catch (e) {
@@ -50,7 +53,7 @@ const CreatePromptInput = z.object({
 export async function createPromptAction(input: z.infer<typeof CreatePromptInput>) {
   const user = await requireUser();
   const parsed = CreatePromptInput.parse(input);
-  const project = await getProjectForUser(user.id, parsed.projectSlug);
+  const project = await requireProjectRole(user.id, parsed.projectSlug, "EDITOR");
 
   let prompt;
   try {
@@ -79,7 +82,7 @@ const RollbackInput = z.object({
 export async function rollbackToVersionAction(input: z.infer<typeof RollbackInput>) {
   const user = await requireUser();
   const parsed = RollbackInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const target = await prisma.version.findFirst({
     where: { id: parsed.versionId, promptId: prompt.id },
@@ -123,7 +126,7 @@ const AddTagInput = z.object({
 export async function addTagAction(input: z.infer<typeof AddTagInput>) {
   const user = await requireUser();
   const parsed = AddTagInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const version = await prisma.version.findFirst({
     where: { id: parsed.versionId, promptId: prompt.id },
@@ -151,7 +154,7 @@ const RemoveTagInput = z.object({
 export async function removeTagAction(input: z.infer<typeof RemoveTagInput>) {
   const user = await requireUser();
   const parsed = RemoveTagInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   await prisma.versionTag.deleteMany({
     where: { id: parsed.tagId, version: { promptId: prompt.id } },
@@ -171,7 +174,7 @@ const CommitVersionInput = z.object({
 export async function commitVersionAction(input: z.infer<typeof CommitVersionInput>) {
   const user = await requireUser();
   const parsed = CommitVersionInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const variables = parseVariables(parsed.content);
 
@@ -223,7 +226,7 @@ export async function createBranchAction(input: z.infer<typeof CreateBranchInput
   const parsed = CreateBranchInput.parse(input);
   if (parsed.name === MAIN_BRANCH) throw new Error("`main` is reserved.");
 
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
   const version = await prisma.version.findFirst({
     where: { id: parsed.fromVersionId, promptId: prompt.id },
   });
@@ -249,7 +252,7 @@ const DeleteBranchInput = z.object({
 export async function deleteBranchAction(input: z.infer<typeof DeleteBranchInput>) {
   const user = await requireUser();
   const parsed = DeleteBranchInput.parse(input);
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
 
   const branch = await prisma.branch.findFirst({
     where: { id: parsed.branchId, promptId: prompt.id },
@@ -280,7 +283,7 @@ export async function mergeBranchAction(input: z.infer<typeof MergeInput>) {
     throw new Error("Source and target branch are the same.");
   }
 
-  const prompt = await getPromptForUser(user.id, parsed.projectSlug, parsed.promptSlug);
+  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
   await ensureMainBranch(prompt.id, prompt.currentVersionId);
 
   const [from, to] = await Promise.all([
