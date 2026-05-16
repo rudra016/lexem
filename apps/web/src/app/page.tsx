@@ -12,23 +12,27 @@ import {
 } from "lucide-react";
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
+import { auth } from "@/auth";
 
 const SIDE_PADDING = "pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-20 lg:pr-32 xl:pr-52";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth();
+  const isAuthed = !!session?.user;
+
   return (
     <main className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col">
-      <SiteNav />
-      <Hero />
+      <SiteNav isAuthed={isAuthed} />
+      <Hero isAuthed={isAuthed} />
       <Features />
       <HowItWorks />
-      <OpenSourceCTA />
+      <OpenSourceCTA isAuthed={isAuthed} />
       <SiteFooter />
     </main>
   );
 }
 
-function SiteNav() {
+function SiteNav({ isAuthed }: { isAuthed: boolean }) {
   return (
     <header className="w-full">
       <div className="pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-20 lg:pr-32 xl:pr-52 h-20 flex items-center justify-between gap-8">
@@ -63,10 +67,16 @@ function SiteNav() {
             size="lg"
           />
           <Link
-            href="/login"
-            className="h-10 px-5 bg-black text-white text-[15px] font-medium inline-flex items-center justify-center transition-colors hover:bg-neutral-800"
+            href={isAuthed ? "/dashboard" : "/login"}
+            className="h-10 px-5 bg-black text-white text-[15px] font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-neutral-800"
           >
-            Sign in
+            {isAuthed ? (
+              <>
+                Dashboard <ArrowRight size={14} />
+              </>
+            ) : (
+              "Sign in"
+            )}
           </Link>
         </div>
       </div>
@@ -74,7 +84,7 @@ function SiteNav() {
   );
 }
 
-function Hero() {
+function Hero({ isAuthed }: { isAuthed: boolean }) {
   return (
     <section className="relative flex-1 overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_minmax(0,960px)] items-center min-h-[calc(100vh-5rem)]">
@@ -92,10 +102,16 @@ function Hero() {
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Link
-              href="/signup"
-              className="h-12 px-6 bg-black text-white text-sm font-medium inline-flex items-center justify-center transition-colors hover:bg-neutral-800"
+              href={isAuthed ? "/dashboard" : "/signup"}
+              className="h-12 px-6 bg-black text-white text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-neutral-800"
             >
-              Get started — it's free
+              {isAuthed ? (
+                <>
+                  Go to dashboard <ArrowRight size={14} />
+                </>
+              ) : (
+                "Get started — it's free"
+              )}
             </Link>
             <Link
               href="https://github.com/rudra016/WebDev-OpenSource"
@@ -277,7 +293,7 @@ function HowItWorks() {
   );
 }
 
-function OpenSourceCTA() {
+function OpenSourceCTA({ isAuthed }: { isAuthed: boolean }) {
   return (
     <section id="open-source" className={`${SIDE_PADDING} py-24 md:py-32`}>
       <div className="relative">
@@ -308,10 +324,10 @@ function OpenSourceCTA() {
             <Github size={16} /> Star on GitHub
           </Link>
           <Link
-            href="/signup"
+            href={isAuthed ? "/dashboard" : "/signup"}
             className="h-12 px-6 border border-white/30 text-white text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-white hover:text-black"
           >
-            Try the hosted demo <ArrowRight size={14} />
+            {isAuthed ? "Open dashboard" : "Try the hosted demo"} <ArrowRight size={14} />
           </Link>
         </div>
       </div>
@@ -343,7 +359,7 @@ function SiteFooter() {
       links: [
         { label: "Twitter", href: "https://x.com/rudra016" },
         { label: "LinkedIn", href: "https://www.linkedin.com/in/rudra016/" },
-        { label: "Contact", href: "mailto:rudra@devalok.in" },
+        { label: "Contact", href: "mailto:rudra619kumar@gmail.com" },
       ],
     },
   ];
@@ -373,7 +389,7 @@ function SiteFooter() {
           </p>
 
           <div className="mt-5 flex items-center gap-2">
-            <SocialLink href="https://x.com/rudra016" label="X / Twitter">
+            <SocialLink href="https://x.com/sudo_rudra" label="X / Twitter">
               <Twitter size={15} />
             </SocialLink>
             <SocialLink

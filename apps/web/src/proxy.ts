@@ -6,13 +6,9 @@ const PUBLIC_PREFIXES = ["/login", "/signup", "/api/auth", "/api/signup"];
 export default auth((req) => {
   const { pathname } = req.nextUrl;
 
-  // Landing page — public for guests, dashboard for signed-in users.
-  if (pathname === "/") {
-    if (req.auth) {
-      return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
-    }
-    return;
-  }
+  // Landing page — always public. Signed-in users see a "Dashboard" CTA
+  // rendered by the page itself instead of being redirected away.
+  if (pathname === "/") return;
 
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return;
 
