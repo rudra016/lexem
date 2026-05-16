@@ -19,3 +19,20 @@ h1, h2, h3 {
   font-family: var(--font-serif);
   letter-spacing: 0.01em;
 }
+
+@keyframes lexem-nudge {
+  0%, 100% { transform: rotate(0); }
+  15%      { transform: rotate(-5deg); }
+  35%      { transform: rotate(4deg); }
+  55%      { transform: rotate(-2deg); }
+  75%      { transform: rotate(1deg); }
+}
+
+.lexem-nudge {
+  animation: lexem-nudge 600ms ease-in-out;
+  transform-origin: 50% 80%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lexem-nudge { animation: none; }
+}

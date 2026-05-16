@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
+import { HomeLogo } from "@/components/home-logo";
 import { auth } from "@/auth";
 
 const SIDE_PADDING = "pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-20 lg:pr-32 xl:pr-52";
@@ -36,21 +37,7 @@ function SiteNav({ isAuthed }: { isAuthed: boolean }) {
   return (
     <header className="w-full">
       <div className="pl-6 md:pl-20 lg:pl-32 xl:pl-52 pr-6 md:pr-20 lg:pr-32 xl:pr-52 h-20 flex items-center justify-between gap-8">
-        <Link href="/" className="group flex items-center gap-1 shrink-0">
-          <Image
-            src="/logo-no-bg.png"
-            alt="Lexem"
-            width={1400}
-            height={629}
-            style={{ height: 48, width: "auto" }}
-            draggable={false}
-            priority
-            className="transition-transform duration-100 ease-out group-active:scale-[0.92] group-active:translate-y-[1px]"
-          />
-          <span className="font-serif font-semibold text-2xl leading-none tracking-wide">
-            Lexem
-          </span>
-        </Link>
+        <HomeLogo />
 
         <nav className="hidden md:flex items-center gap-9 text-[15px]">
           <a href="#features" className="text-neutral-700 hover:text-black transition-colors">Features</a>
@@ -105,9 +92,8 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
             Git for your <span className="italic">prompts</span>.
           </h1>
           <p className="mt-6 text-lg text-neutral-700 leading-relaxed max-w-xl">
-            Version, diff, test, and deploy AI prompts with the same discipline
-            you bring to code. Rollback in one click. Catch regressions before
-            they ship.
+            Version, diff, and ship AI prompts with the same discipline you
+            bring to code — so changes go live deliberately, not by accident.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Link
@@ -145,15 +131,15 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
             </div>
             <div>
               <dt className="text-xs uppercase tracking-widest text-neutral-500">
-                Scorers
+                Envs
               </dt>
-              <dd className="mt-1 font-mono text-sm">3 built-in</dd>
+              <dd className="mt-1 font-mono text-sm">Dev to prod</dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-widest text-neutral-500">
                 Self-host
               </dt>
-              <dd className="mt-1 font-mono text-sm">Yes</dd>
+              <dd className="mt-1 font-mono text-sm">Always</dd>
             </div>
           </dl>
         </div>
