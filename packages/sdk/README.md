@@ -26,7 +26,7 @@ const p = await lexem.get("summarizer", { env: "production" });
 
 console.log(p.content);   // "You are a helpful summarizer that..."
 console.log(p.versionId); // "clxa..."
-console.log(p.variables); // { article: "string" }
+console.log(p.variables); // [{ name: "article", type: "string", default: null }]
 ```
 
 Get an API key from **Project → API keys** in the Lexem dashboard.
@@ -92,10 +92,16 @@ await lexem.get("summarizer");
 ## Response shape
 
 ```ts
+type PromptVariable = {
+  name: string;
+  type: string | null;      // declared type, e.g. "string" — null if untyped
+  default: string | null;   // declared default value, if any
+};
+
 type PromptResult = {
   content: string;          // the prompt text, with {{var}} placeholders
   versionId: string;        // ID of the version this response came from
-  variables: Record<string, string> | null;
+  variables: PromptVariable[] | null;
   env: string;              // env requested, or "current"
   fetchedAt: string;        // ISO-8601 timestamp
 };
