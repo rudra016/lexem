@@ -6,5 +6,6 @@ export {
   type LexemClientOptions,
   type GetOptions,
   type PromptResult,
+  type PromptVariable,
   type PromptVariables,
 } from "./types.js";

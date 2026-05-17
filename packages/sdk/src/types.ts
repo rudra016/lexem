@@ -25,11 +25,22 @@ export type GetOptions = {
 };
 
 /**
- * The variables schema declared by the prompt's author when the version was
- * committed. Shape: `{ "<name>": "<type>" }`, e.g. `{ user_name: "string" }`.
- * `null` when the version has no declared variables.
+ * A variable declared by the prompt's author when the version was committed.
+ * Lexem parses `{{name}}` (and `{{name: type}}`) placeholders out of the
+ * prompt content; this is the parsed list, with the optional declared type
+ * and default value preserved.
  */
-export type PromptVariables = Record<string, string> | null;
+export type PromptVariable = {
+  name: string;
+  type: string | null;
+  default: string | null;
+};
+
+/**
+ * The full variables schema for a version. `null` when the version has no
+ * declared variables (e.g. a static prompt with no `{{placeholders}}`).
+ */
+export type PromptVariables = PromptVariable[] | null;
 
 export type PromptResult = {
   /** The prompt text, including any `{{variable}}` placeholders. */

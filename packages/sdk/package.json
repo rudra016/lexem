@@ -25,6 +25,18 @@
       "require": "./dist/index.cjs"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rudra016/lexem.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/rudra016/lexem/issues"
+  },
+  "homepage": "https://www.lexem.site/docs#sdk",
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean --target node18",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch --target node18",
