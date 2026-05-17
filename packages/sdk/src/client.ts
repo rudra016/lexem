@@ -109,7 +109,7 @@ export class LexemClient {
  * Create a Lexem client.
  *
  * ```ts
- * import { createClient } from "@lexem/sdk";
+ * import { createClient } from "lexem-sdk";
  *
  * const lexem = createClient({ apiKey: process.env.LEXEM_API_KEY! });
  * const p = await lexem.get("summarizer", { env: "production" });

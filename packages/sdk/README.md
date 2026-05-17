@@ -1,13 +1,13 @@
-# @lexem/sdk
+# lexem-sdk
 
 Fetch live prompts from [Lexem](https://www.lexem.site) — Git for AI prompts. Bring versioned, environment-promoted, variable-aware prompts into your TypeScript/JavaScript app with one call.
 
 ## Install
 
 ```bash
-npm install @lexem/sdk
+npm install lexem-sdk
 # or
-pnpm add @lexem/sdk
+pnpm add lexem-sdk
 ```
 
 Requires Node 18+ (uses global `fetch`).
@@ -15,7 +15,7 @@ Requires Node 18+ (uses global `fetch`).
 ## Quick start
 
 ```ts
-import { createClient } from "@lexem/sdk";
+import { createClient } from "lexem-sdk";
 
 const lexem = createClient({
   apiKey: process.env.LEXEM_API_KEY!,
@@ -108,7 +108,7 @@ Log `versionId` alongside your LLM calls to make debugging dead simple — *"whi
 All errors are instances of `LexemError`:
 
 ```ts
-import { LexemError } from "@lexem/sdk";
+import { LexemError } from "lexem-sdk";
 
 try {
   await lexem.get("does-not-exist");

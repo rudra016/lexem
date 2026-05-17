@@ -287,7 +287,7 @@ function QuickStart() {
         <Step n="5" title="Fetch it from your code">
           <Pre
             language="TypeScript"
-            code={`import { createClient } from "@lexem/sdk";
+            code={`import { createClient } from "lexem-sdk";
 
 const lexem = createClient({ apiKey: process.env.LEXEM_API_KEY! });
 
@@ -462,26 +462,24 @@ function Sdk() {
       </P>
 
       <Callout tone="warn" title="Beta">
-        The SDK currently ships in the monorepo as <Code>@lexem/sdk</Code>.
-        Publishing to npm is on the roadmap — for now, install from a tarball
-        (<Code>pnpm pack</Code>) or vendor the <Code>dist/</Code> output.
+        <Code>lexem-sdk</Code> is published on npm at <Code>0.1.x</Code> — beta
+        while the wire format stabilizes. Pin a specific version in production.
       </Callout>
 
       <H3 id="sdk-install">Install</H3>
       <Pre
         language="bash"
-        code={`# once published:
-npm install @lexem/sdk
-
-# today, from a local tarball:
-pnpm --filter @lexem/sdk pack
-npm install ./lexem-sdk-0.1.0.tgz`}
+        code={`npm install lexem-sdk
+# or
+pnpm add lexem-sdk
+# or
+yarn add lexem-sdk`}
       />
 
       <H3 id="sdk-create">Create a client</H3>
       <Pre
         language="TypeScript"
-        code={`import { createClient } from "@lexem/sdk";
+        code={`import { createClient } from "lexem-sdk";
 
 const lexem = createClient({
   apiKey: process.env.LEXEM_API_KEY!,
@@ -541,7 +539,7 @@ lexem.clearCache();`}
       <H3 id="sdk-errors">Errors</H3>
       <Pre
         language="TypeScript"
-        code={`import { LexemError } from "@lexem/sdk";
+        code={`import { LexemError } from "lexem-sdk";
 
 try {
   await lexem.get("does-not-exist");

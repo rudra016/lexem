@@ -1,5 +1,5 @@
 {
-  "name": "@lexem/sdk",
+  "name": "lexem-sdk",
   "version": "0.1.0",
   "description": "Fetch prompts from Lexem with version control, environments, and variable rendering.",
   "license": "MIT",
@@ -24,9 +24,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "repository": {
     "type": "git",
