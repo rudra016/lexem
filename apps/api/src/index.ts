@@ -3,22 +3,18 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 
-import { projects } from "./routes/projects.js";
-import { prompts } from "./routes/prompts.js";
-import { versions } from "./routes/versions.js";
 import { v1 } from "./routes/v1.js";
 
 const app = new Hono();
 
 app.use("*", logger());
-app.use("*", cors());
+app.use("*", cors({
+  origin: ["https://www.lexem.site", "https://lexem.site"],
+}));
 
 app.get("/", (c) => c.json({ name: "lexem-api", status: "ok" }));
 app.get("/health", (c) => c.json({ ok: true }));
 
-app.route("/projects", projects);
-app.route("/prompts", prompts);
-app.route("/versions", versions);
 app.route("/v1", v1);
 
 app.onError((err, c) => {
