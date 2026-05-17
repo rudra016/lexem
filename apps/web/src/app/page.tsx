@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
+import { CopySnippet } from "@/components/copy-snippet";
 import { HomeLogo } from "@/components/home-logo";
 import { auth } from "@/auth";
 
@@ -193,14 +194,7 @@ const prompt = await lexem.render(
             memory, and renders <code className="font-mono bg-neutral-100 border border-black/10 px-1.5 py-0.5 text-[0.9em]">{`{{variables}}`}</code> in one call.
           </p>
 
-          <div className="mt-8 inline-flex items-stretch border border-black bg-white shadow-[4px_4px_0px_#000] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none">
-            <span className="px-3 flex items-center text-neutral-400 font-mono text-sm border-r border-black/10 select-none">
-              $
-            </span>
-            <code className="px-4 py-3 font-mono text-sm text-neutral-900">
-              npm install lexem-sdk
-            </code>
-          </div>
+          <CopySnippet text="npm install lexem-sdk" />
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
