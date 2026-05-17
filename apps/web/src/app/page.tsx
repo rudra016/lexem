@@ -14,6 +14,7 @@ import {
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
 import { CopySnippet } from "@/components/copy-snippet";
+import { ChameleonTooltip } from "@/components/chameleon-tooltip";
 import { HomeLogo } from "@/components/home-logo";
 import { auth } from "@/auth";
 
@@ -96,7 +97,7 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
           </h1>
           <p className="mt-6 text-lg text-neutral-700 leading-relaxed max-w-xl">
             Version, diff, and ship AI prompts with the same discipline you
-            bring to code — so changes go live deliberately, not by accident.
+            bring to code, so changes go live deliberately, not by accident.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <Link
@@ -156,6 +157,7 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
             className="object-contain object-right pointer-events-none select-none translate-x-10"
             priority
           />
+          <ChameleonTooltip />
         </div>
       </div>
     </section>
@@ -348,20 +350,29 @@ function HowItWorks() {
       </div>
 
       <ol className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {steps.map((s) => (
+        {steps.map((s, i) => (
           <li
             key={s.n}
-            className="group border border-black/10 p-7 md:p-8 bg-neutral-50 transition-colors duration-150 hover:bg-black hover:text-white"
+            className="group relative overflow-hidden border border-black/10 p-7 md:p-8 bg-neutral-50"
+            style={{ "--delay": `${i * 60}ms` } as React.CSSProperties}
           >
-            <div className="font-mono text-sm text-neutral-500 group-hover:text-neutral-400 transition-colors">
-              {s.n}
+            {/* Sweep fill */}
+            <div
+              className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out"
+              style={{ transitionDelay: `var(--delay)` }}
+            />
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="font-mono text-sm text-neutral-500 group-hover:text-neutral-400 transition-colors duration-300" style={{ transitionDelay: `var(--delay)` }}>
+                {s.n}
+              </div>
+              <h3 className="mt-3 font-serif text-2xl font-bold tracking-tight group-hover:text-white transition-colors duration-300" style={{ transitionDelay: `var(--delay)` }}>
+                {s.title}
+              </h3>
+              <p className="mt-2 text-[15px] text-neutral-700 leading-relaxed group-hover:text-neutral-200 transition-colors duration-300" style={{ transitionDelay: `var(--delay)` }}>
+                {s.body}
+              </p>
             </div>
-            <h3 className="mt-3 font-serif text-2xl font-bold tracking-tight">
-              {s.title}
-            </h3>
-            <p className="mt-2 text-[15px] text-neutral-700 leading-relaxed group-hover:text-neutral-200 transition-colors">
-              {s.body}
-            </p>
           </li>
         ))}
       </ol>
@@ -433,7 +444,7 @@ function SiteFooter() {
     {
       heading: "Connect",
       links: [
-        { label: "Twitter", href: "https://x.com/rudra016" },
+        { label: "Twitter", href: "https://x.com/sudo_rudra" },
         { label: "LinkedIn", href: "https://www.linkedin.com/in/rudra-kumar-897264227/" },
         { label: "Contact", href: "mailto:rudra619kumar@gmail.com" },
       ],
@@ -444,7 +455,7 @@ function SiteFooter() {
     <footer className={`${SIDE_PADDING} pt-16 md:pt-20 border-t border-black/10 overflow-hidden`}>
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-20">
         <div>
-          <Link href="/" className="group inline-flex items-center gap-1">
+          <Link href="/" className="group inline-flex items-center gap-1 ml-[-7px]">
             <Image
               src="/logo-no-bg.png"
               alt="Lexem"
