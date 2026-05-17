@@ -1,7 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { ArrowRight } from "lucide-react";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.lexem.site";
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: SITE_URL,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Docs",
+      item: `${SITE_URL}/docs`,
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Docs",
@@ -22,6 +45,12 @@ const SECTIONS = [
 export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
+      <Script
+        id="breadcrumb-ld-json"
+        type="application/ld+json"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <DocsNav />
 
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-12 grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)] gap-12">
