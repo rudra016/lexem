@@ -1,10 +1,40 @@
 {
   "name": "@lexem/sdk",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "dependencies": {
-    "@lexem/types": "workspace:*"
+  "version": "0.1.0",
+  "description": "Fetch prompts from Lexem with version control, environments, and variable rendering.",
+  "license": "MIT",
+  "keywords": [
+    "lexem",
+    "prompts",
+    "prompt-management",
+    "llm",
+    "ai",
+    "sdk"
+  ],
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean --target node18",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch --target node18",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5"
   }
 }

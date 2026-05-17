@@ -2,6 +2,7 @@ import { requireUser } from "@/lib/session";
 import { getProjectForUser } from "@/lib/authz";
 import { prisma } from "@lexem/db";
 import { CreatePromptDialog } from "@/components/create-prompt-dialog";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default async function ProjectPage({
@@ -34,10 +35,16 @@ export default async function ProjectPage({
         </div>
         <div className="flex items-center gap-2">
           <Link
+            href={`/projects/${project.slug}/api-keys`}
+            className="h-10 px-4 border border-black bg-white text-black text-sm font-medium inline-flex items-center gap-2 transition-colors hover:bg-black hover:text-white"
+          >
+            API keys
+          </Link>
+          <Link
             href={`/projects/${project.slug}/environments`}
             className="h-10 px-4 border border-black bg-white text-black text-sm font-medium inline-flex items-center gap-2 transition-colors hover:bg-black hover:text-white"
           >
-            Environments →
+            Environments <ArrowRight size={14} />
           </Link>
           <CreatePromptDialog projectSlug={project.slug} />
         </div>

@@ -6,6 +6,7 @@ import { cors } from "hono/cors";
 import { projects } from "./routes/projects.js";
 import { prompts } from "./routes/prompts.js";
 import { versions } from "./routes/versions.js";
+import { v1 } from "./routes/v1.js";
 
 const app = new Hono();
 
@@ -18,6 +19,7 @@ app.get("/health", (c) => c.json({ ok: true }));
 app.route("/projects", projects);
 app.route("/prompts", prompts);
 app.route("/versions", versions);
+app.route("/v1", v1);
 
 app.onError((err, c) => {
   console.error(err);
