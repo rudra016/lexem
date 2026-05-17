@@ -90,7 +90,7 @@ function DocsNav() {
           <span className="font-serif font-semibold text-xl leading-none tracking-wide">
             Lexem
           </span>
-          <span className="ml-3 text-xs font-mono uppercase tracking-widest text-neutral-500">
+          <span className="ml-3 mt-1 text-xs font-mono uppercase tracking-widest text-neutral-500">
             Docs
           </span>
         </Link>
@@ -200,15 +200,21 @@ function Code({ children }: { children: React.ReactNode }) {
 
 function Pre({ language, code }: { language?: string; code: string }) {
   return (
-    <div className="bg-neutral-900 border border-black/10 shadow-[6px_6px_0px_#000] overflow-x-auto">
-      {language && (
-        <div className="px-4 py-1.5 text-[10px] uppercase tracking-widest text-neutral-500 font-mono border-b border-white/10">
-          {language}
-        </div>
-      )}
-      <pre className="px-4 py-3 text-[13px] text-neutral-100 font-mono leading-relaxed">
-        <code>{code}</code>
-      </pre>
+    <div className="relative">
+      <div
+        aria-hidden
+        className="absolute inset-0 translate-x-[6px] translate-y-[6px] bg-white border border-black"
+      />
+      <div className="relative bg-neutral-900 border border-black overflow-x-auto">
+        {language && (
+          <div className="px-4 py-1.5 text-[10px] uppercase tracking-widest text-neutral-500 font-mono border-b border-white/10">
+            {language}
+          </div>
+        )}
+        <pre className="px-4 py-3 text-[13px] text-neutral-100 font-mono leading-relaxed">
+          <code>{code}</code>
+        </pre>
+      </div>
     </div>
   );
 }
@@ -418,7 +424,12 @@ function RoleMatrix() {
   ];
 
   return (
-    <div className="bg-white border border-black/10 shadow-[6px_6px_0px_#000] overflow-x-auto">
+    <div className="relative">
+      <div
+        aria-hidden
+        className="absolute inset-0 translate-x-[6px] translate-y-[6px] bg-white border border-black"
+      />
+      <div className="relative bg-white border border-black/10 overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b border-black/10 bg-neutral-50">
           <tr>
@@ -447,6 +458,7 @@ function RoleMatrix() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -495,7 +507,7 @@ const lexem = createClient({
 // {
 //   content: "You are a helpful summarizer...",
 //   versionId: "clxa...",
-//   variables: { article: "string" },
+//   variables: [{ name: "article", type: "string", default: null }],
 //   env: "production",
 //   fetchedAt: "2026-05-17T08:00:00Z"
 // }`}
@@ -595,7 +607,7 @@ Returns 200:
   {
     "content":    "You are a helpful summarizer...",
     "versionId":  "clxa...",
-    "variables":  { "article": "string" } | null,
+    "variables":  [{ "name": "article", "type": "string", "default": null }] | null,
     "env":        "production" | "current",
     "fetchedAt":  "2026-05-17T08:00:00Z"
   }

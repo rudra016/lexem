@@ -9,6 +9,7 @@ import {
   Github,
   Twitter,
   Linkedin,
+  Package,
 } from "lucide-react";
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
@@ -25,6 +26,7 @@ export default async function LandingPage() {
     <main className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col">
       <SiteNav isAuthed={isAuthed} />
       <Hero isAuthed={isAuthed} />
+      <InstallSnippet />
       <Features />
       <HowItWorks />
       <OpenSourceCTA isAuthed={isAuthed} />
@@ -153,6 +155,91 @@ function Hero({ isAuthed }: { isAuthed: boolean }) {
             className="object-contain object-right pointer-events-none select-none translate-x-10"
             priority
           />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InstallSnippet() {
+  const code = `import { createClient } from "lexem-sdk";
+
+const lexem = createClient({
+  apiKey: process.env.LEXEM_API_KEY!,
+});
+
+const prompt = await lexem.render(
+  "summarizer",
+  { article: text },
+  { env: "production" },
+);`;
+
+  return (
+    <section
+      id="install"
+      className={`${SIDE_PADDING} py-24 md:py-32 bg-white border-y border-black/10 scroll-mt-24`}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,560px)] gap-12 lg:gap-20 items-center">
+        <div>
+          <span className="text-xs uppercase tracking-widest text-neutral-500">
+            SDK · live on npm
+          </span>
+          <h2 className="mt-3 font-serif text-4xl md:text-5xl font-black tracking-tight leading-[1.05]">
+            Five lines to <span className="italic">live prompts</span>.
+          </h2>
+          <p className="mt-4 text-lg text-neutral-700 max-w-xl">
+            Ship a prompt change without redeploying your app. The SDK fetches
+            the active version for the environment you ask for, caches it in
+            memory, and renders <code className="font-mono bg-neutral-100 border border-black/10 px-1.5 py-0.5 text-[0.9em]">{`{{variables}}`}</code> in one call.
+          </p>
+
+          <div className="mt-8 inline-flex items-stretch border border-black bg-white shadow-[4px_4px_0px_#000] transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none">
+            <span className="px-3 flex items-center text-neutral-400 font-mono text-sm border-r border-black/10 select-none">
+              $
+            </span>
+            <code className="px-4 py-3 font-mono text-sm text-neutral-900">
+              npm install lexem-sdk
+            </code>
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/docs#sdk"
+              className="h-11 px-5 bg-black text-white text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-neutral-800"
+            >
+              Read SDK docs <ArrowRight size={14} />
+            </Link>
+            <a
+              href="https://www.npmjs.com/package/lexem-sdk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-11 px-5 border border-black bg-white text-black text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-black hover:text-white"
+            >
+              <Package size={14} /> View on npm
+            </a>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div
+            aria-hidden
+            className="absolute inset-0 translate-x-[6px] translate-y-[6px] bg-white border border-black"
+          />
+          <div className="relative bg-neutral-900 border border-black">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-700" />
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-700" />
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-700" />
+              </div>
+              <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-mono">
+                app.ts
+              </span>
+            </div>
+            <pre className="px-5 py-5 text-[13px] leading-relaxed font-mono text-neutral-100 overflow-x-auto">
+              <code>{code}</code>
+            </pre>
+          </div>
         </div>
       </div>
     </section>
@@ -345,8 +432,8 @@ function SiteFooter() {
       heading: "Open source",
       links: [
         { label: "GitHub", href: "https://github.com/rudra016/lexem" },
-        { label: "Self-host", href: "/docs/self-host" },
-        { label: "License", href: "/docs/license" },
+        { label: "Self-host", href: "/docs#self-host" },
+        { label: "License", href: "https://github.com/rudra016/lexem/blob/master/LICENSE" },
       ],
     },
     {
