@@ -2,8 +2,11 @@
 
 import { diffLines, diffWordsWithSpace } from "diff";
 import { useMemo, useState, useTransition } from "react";
-import { Sparkles } from "lucide-react";
-import { generateChangelogAction } from "@/app/(app)/changelog-actions";
+import { Sparkles, AlertTriangle, Info, ShieldAlert } from "lucide-react";
+import {
+  generateChangelogAction,
+  type DiffSummary,
+} from "@/app/(app)/changelog-actions";
 import { Spinner } from "@/components/spinner";
 
 type Mode = "inline" | "split";
@@ -20,7 +23,7 @@ export function DiffView({
   toLabel: string;
 }) {
   const [mode, setMode] = useState<Mode>("split");
-  const [summary, setSummary] = useState<string | null>(null);
+  const [summary, setSummary] = useState<DiffSummary | null>(null);
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -93,17 +96,24 @@ export function DiffView({
       </div>
 
       {(summary || summaryError) && (
-        <div className="border-b border-neutral-200 px-4 py-3 bg-amber-50">
+        <div className="border-b border-neutral-200 px-4 py-3 bg-amber-50 space-y-3">
           <div className="flex items-start gap-2">
             <Sparkles size={14} className="text-amber-700 mt-1 shrink-0" />
             <div className="text-sm text-neutral-800 leading-relaxed">
               {summaryError ? (
                 <span className="text-red-700">{summaryError}</span>
               ) : (
-                summary
+                summary?.summary
               )}
             </div>
           </div>
+          {summary && summary.impacts.length > 0 && (
+            <ul className="space-y-1.5 pl-6">
+              {summary.impacts.map((impact, i) => (
+                <ImpactRow key={i} severity={impact.severity} note={impact.note} />
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
@@ -136,6 +146,32 @@ function InlineDiff({ parts }: { parts: { value: string; added?: boolean; remove
         </span>
       ))}
     </pre>
+  );
+}
+
+function ImpactRow({
+  severity,
+  note,
+}: {
+  severity: "info" | "warn" | "high";
+  note: string;
+}) {
+  const palette =
+    severity === "high"
+      ? { row: "text-red-800", icon: <ShieldAlert size={12} className="text-red-700" />, label: "High" }
+      : severity === "warn"
+        ? { row: "text-amber-900", icon: <AlertTriangle size={12} className="text-amber-700" />, label: "Warn" }
+        : { row: "text-neutral-700", icon: <Info size={12} className="text-neutral-500" />, label: "Info" };
+  return (
+    <li className={`flex items-start gap-2 text-xs leading-relaxed ${palette.row}`}>
+      <span className="mt-1 shrink-0">{palette.icon}</span>
+      <span>
+        <span className="font-mono uppercase tracking-widest text-[10px] mr-2">
+          {palette.label}
+        </span>
+        {note}
+      </span>
+    </li>
   );
 }
 

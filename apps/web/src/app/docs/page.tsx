@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Script from "next/script";
 import { ArrowRight } from "lucide-react";
+import { auth } from "@/auth";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://www.lexem.site";
@@ -42,7 +43,10 @@ const SECTIONS = [
   { id: "faq", label: "FAQ" },
 ];
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const session = await auth();
+  const isAuthed = !!session?.user;
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <Script
@@ -51,7 +55,7 @@ export default function DocsPage() {
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <DocsNav />
+      <DocsNav isAuthed={isAuthed} />
 
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-12 grid grid-cols-1 lg:grid-cols-[200px_minmax(0,1fr)] gap-12">
         <DocsToc />
@@ -103,7 +107,7 @@ export default function DocsPage() {
 
 // ---------- Nav ----------
 
-function DocsNav() {
+function DocsNav({ isAuthed }: { isAuthed: boolean }) {
   return (
     <header className="border-b border-black/10 bg-white sticky top-0 z-30">
       <div className="max-w-6xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between gap-8">
@@ -139,10 +143,10 @@ function DocsNav() {
             GitHub
           </a>
           <Link
-            href="/login"
+            href={isAuthed ? "/dashboard" : "/login"}
             className="h-9 px-4 bg-black text-white text-sm font-medium inline-flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors"
           >
-            Sign in <ArrowRight size={14} />
+            {isAuthed ? "Dashboard" : "Sign in"} <ArrowRight size={14} />
           </Link>
         </nav>
       </div>

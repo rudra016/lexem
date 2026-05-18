@@ -8,8 +8,8 @@ import { requirePromptRole } from "@/lib/authz";
 import { rethrowAsFriendly } from "@/lib/errors";
 import { runCase, type CaseResult } from "@/lib/eval-runner";
 import { decrypt } from "@/lib/crypto";
-import { DEFAULT_MODELS } from "@/lib/providers";
-import { EVAL_TEMPLATES } from "@/lib/eval-templates";
+import { completeChat, DEFAULT_MODELS } from "@/lib/providers";
+import { parseVariables } from "@/lib/variables";
 
 const CreateEvalInput = z.object({
   projectSlug: z.string(),
@@ -174,51 +174,199 @@ export async function deleteCaseAction(input: z.infer<typeof DeleteCaseInput>) {
   revalidatePath(`/projects/${parsed.projectSlug}/${parsed.promptSlug}/evals`);
 }
 
-// ---------- Templates ----------
+// ---------- Auto case generation ----------
 
-const CreateFromTemplateInput = z.object({
+const GenerateInput = z.object({
   projectSlug: z.string(),
   promptSlug: z.string(),
-  templateId: z.string(),
-  name: z.string().min(1).max(80).optional(),
+  name: z.string().min(1).max(80),
+  count: z.number().int().min(5).max(15),
   providerKeyId: z.string().optional().nullable(),
   model: z.string().max(80).optional().nullable(),
 });
 
-export async function createEvalFromTemplateAction(
-  input: z.infer<typeof CreateFromTemplateInput>,
+const GENERATOR_SYSTEM = `You are an expert at writing test cases for AI system prompts.
+You will be given a system prompt and the list of variables it accepts. Your job is to
+brainstorm a diverse set of test cases that, taken together, exercise the prompt's
+behaviour across realistic scenarios — happy paths, edge cases, adversarial inputs,
+empty inputs, and tone/scope boundaries.
+
+Return a JSON object with this exact shape:
+
+{
+  "cases": [
+    {
+      "name": string,           // 2-5 words, Title Case, describes what this case probes
+      "inputVars": { ... },     // object mapping each declared variable name to a concrete value of the correct type
+      "rubric": string          // 1-2 sentences telling an LLM judge how to grade the output. Specific and verifiable.
+    }
+  ]
+}
+
+Rules:
+- Generate exactly the number of cases requested.
+- Every case MUST provide a value for every variable, of the correct type (string/number/boolean).
+- If the prompt has no variables, "inputVars" is an empty object {} and each case probes a different aspect of the output.
+- Cases must be meaningfully different from each other — different intents, register, length, edge cases.
+- Rubrics describe what a CORRECT output looks like for THIS case. They should be checkable: mention concrete content, format, tone, or refusal expectations.
+- No markdown, no code fences, JSON only.`;
+
+const GeneratedCaseSchema = z.object({
+  name: z.string().min(1).max(80),
+  inputVars: z.record(z.string(), z.unknown()),
+  rubric: z.string().min(1).max(500),
+});
+const GeneratorOutputSchema = z.object({
+  cases: z.array(GeneratedCaseSchema).min(1).max(20),
+});
+
+function stripCodeFence(s: string): string {
+  const fence = s.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return fence ? fence[1] : s;
+}
+
+export async function createEvalWithGeneratedCasesAction(
+  input: z.infer<typeof GenerateInput>,
 ) {
   const user = await requireUser();
-  const parsed = CreateFromTemplateInput.parse(input);
-  const prompt = await requirePromptRole(user.id, parsed.projectSlug, parsed.promptSlug, "EDITOR");
+  const parsed = GenerateInput.parse(input);
+  const prompt = await requirePromptRole(
+    user.id,
+    parsed.projectSlug,
+    parsed.promptSlug,
+    "EDITOR",
+  );
 
-  const template = EVAL_TEMPLATES.find((t) => t.id === parsed.templateId);
-  if (!template) throw new Error("Template not found");
+  // Need a committed version to read prompt content + variables.
+  const currentVersionId = prompt.currentVersionId;
+  if (!currentVersionId) {
+    throw new Error("Commit a version first — there's nothing to generate cases for yet.");
+  }
+  const version = await prisma.version.findFirst({
+    where: { id: currentVersionId, promptId: prompt.id },
+    select: { content: true },
+  });
+  if (!version) throw new Error("Current version not found.");
 
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    const evalRow = await tx.eval.create({
-      data: {
-        promptId: prompt.id,
-        name: parsed.name ?? template.name,
-        providerKeyId: parsed.providerKeyId || null,
-        model: parsed.model || null,
-      },
+  // Resolve provider key — preferred from input, otherwise first team key.
+  let providerKeyRow = parsed.providerKeyId
+    ? await prisma.providerKey.findFirst({
+        where: {
+          id: parsed.providerKeyId,
+          team: { projects: { some: { id: prompt.projectId } } },
+        },
+      })
+    : null;
+  if (!providerKeyRow) {
+    providerKeyRow = await prisma.providerKey.findFirst({
+      where: { team: { projects: { some: { id: prompt.projectId } } } },
+      orderBy: { createdAt: "asc" },
     });
-    for (const c of template.cases) {
-      await tx.evalCase.create({
+  }
+  if (!providerKeyRow) {
+    throw new Error("Add a provider key in Settings before generating cases.");
+  }
+
+  const apiKey = decrypt(providerKeyRow.encryptedKey);
+  const provider = providerKeyRow.provider as Provider;
+  const generationModel =
+    parsed.model || providerKeyRow.defaultModel || DEFAULT_MODELS[provider][0];
+
+  const variables = parseVariables(version.content);
+  const variableDescription =
+    variables.length > 0
+      ? variables
+          .map(
+            (v) =>
+              `  - {{${v.name}}}: ${v.type}${v.default != null ? ` (default: ${JSON.stringify(v.default)})` : ""}`,
+          )
+          .join("\n")
+      : "  (none — generate cases with empty inputVars)";
+
+  const userPrompt = [
+    `System prompt under test:`,
+    "```",
+    version.content,
+    "```",
+    "",
+    `Declared variables:`,
+    variableDescription,
+    "",
+    `Generate exactly ${parsed.count} test cases.`,
+  ].join("\n");
+
+  const res = await completeChat({
+    provider,
+    apiKey,
+    model: generationModel,
+    system: GENERATOR_SYSTEM,
+    user: userPrompt,
+    jsonOutput: true,
+    temperature: 0.7,
+  });
+
+  const raw = res.output?.trim() ?? "";
+  let parsedJson: unknown;
+  try {
+    parsedJson = JSON.parse(stripCodeFence(raw));
+  } catch {
+    throw new Error("The model returned invalid JSON. Try again or pick a different model.");
+  }
+  const generated = GeneratorOutputSchema.safeParse(parsedJson);
+  if (!generated.success) {
+    throw new Error("The model returned an unexpected shape. Try again or pick a different model.");
+  }
+
+  // Coerce values to declared variable types where possible.
+  const varTypes = new Map(variables.map((v) => [v.name, v.type] as const));
+  function coerce(value: unknown, type: "string" | "number" | "boolean"): unknown {
+    if (type === "number") {
+      const n = typeof value === "number" ? value : Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    if (type === "boolean") {
+      if (typeof value === "boolean") return value;
+      if (typeof value === "string") return value.toLowerCase() === "true";
+      return Boolean(value);
+    }
+    return typeof value === "string" ? value : String(value ?? "");
+  }
+
+  try {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const evalRow = await tx.eval.create({
         data: {
-          evalId: evalRow.id,
-          name: c.name,
-          inputVars: c.inputVars as Prisma.InputJsonValue,
-          expectedOutput: c.expectedOutput ?? null,
-          scorerType: c.scorerType as ScorerType,
-          scorerConfig: c.scorerConfig
-            ? (c.scorerConfig as Prisma.InputJsonValue)
-            : Prisma.DbNull,
+          promptId: prompt.id,
+          name: parsed.name,
+          providerKeyId: parsed.providerKeyId || null,
+          model: parsed.model || null,
         },
       });
-    }
-  });
+      for (const c of generated.data.cases) {
+        const inputVars: Record<string, unknown> = {};
+        for (const v of variables) {
+          inputVars[v.name] = coerce(c.inputVars[v.name], v.type);
+        }
+        // Allow extra keys from the LLM through too, in case prompt has dynamic vars.
+        for (const [k, val] of Object.entries(c.inputVars)) {
+          if (!varTypes.has(k)) inputVars[k] = val;
+        }
+
+        await tx.evalCase.create({
+          data: {
+            evalId: evalRow.id,
+            name: c.name,
+            inputVars: inputVars as Prisma.InputJsonValue,
+            expectedOutput: null,
+            scorerType: "LLM_JUDGE" as ScorerType,
+            scorerConfig: { rubric: c.rubric } as Prisma.InputJsonValue,
+          },
+        });
+      }
+    });
+  } catch (e) {
+    rethrowAsFriendly(e);
+  }
 
   revalidatePath(`/projects/${parsed.projectSlug}/${parsed.promptSlug}/evals`);
 }
@@ -323,6 +471,20 @@ export async function runEvalAction(input: z.infer<typeof RunEvalInput>) {
         completedAt: new Date(),
       },
     });
+
+    if (tokensIn > 0 || tokensOut > 0) {
+      await prisma.usageEvent.create({
+        data: {
+          projectId: prompt.projectId,
+          promptId: prompt.id,
+          versionId: version.id,
+          envName: null,
+          tokensIn,
+          tokensOut,
+          source: "eval",
+        },
+      });
+    }
   } catch (e) {
     await prisma.run.update({
       where: { id: run.id },

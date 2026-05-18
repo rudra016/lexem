@@ -5,6 +5,8 @@ export {
   LexemError,
   type LexemClientOptions,
   type GetOptions,
+  type LogUsageInput,
+  type LogUsageOptions,
   type PromptResult,
   type PromptVariable,
   type PromptVariables,

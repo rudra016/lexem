@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
 import { Spinner } from "@/components/spinner";
 
 
@@ -16,6 +17,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -120,21 +122,44 @@ export function LoginForm() {
               "
             />
 
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-              className="
-                w-full px-4 py-3 rounded-xl
-                border border-neutral-300
-                bg-white text-sm
-                outline-none
-                focus:border-black
-              "
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                className="
+                  w-full px-4 py-3 pr-12 rounded-xl
+                  border border-neutral-300
+                  bg-white text-sm
+                  outline-none
+                  focus:border-black
+                "
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="
+                  absolute right-3 top-1/2 -translate-y-1/2
+                  text-neutral-500 hover:text-black
+                  transition-colors
+                "
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            <div className="flex justify-end -mt-2">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-neutral-600 hover:text-black underline underline-offset-2"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             {error && (
               <p className="text-sm text-red-600 font-medium">{error}</p>

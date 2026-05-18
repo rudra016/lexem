@@ -3,13 +3,15 @@ import Image from "next/image";
 import {
   GitBranch,
   FlaskConical,
-  KeyRound,
-  LibraryBig,
   ArrowRight,
   Github,
   Twitter,
   Linkedin,
   Package,
+  Sparkles,
+  ShieldAlert,
+  Shield,
+  BarChart3,
 } from "lucide-react";
 import { GitHubStarsButton } from "@/components/animate-ui/components/buttons/github-stars";
 import { WordRotate } from "@/components/ui/word-rotate";
@@ -254,19 +256,31 @@ function Features() {
       icon: FlaskConical,
       title: "Evals that catch regressions",
       body:
-        "Build test suites with typed inputs. Score with exact match, regex, or LLM-as-judge. Auto-flag scores that drop ≥5 points.",
+        "Build test suites with typed inputs. Score with exact match, regex, or LLM-as-judge. Auto-flag scores that drop ≥5 points from the previous version.",
     },
     {
-      icon: KeyRound,
-      title: "Bring your own keys",
+      icon: Sparkles,
+      title: "AI writes your test cases",
       body:
-        "Plug in OpenAI, Anthropic, or Google. Keys are encrypted at rest with AES-256-GCM and managed per team in Settings.",
+        "Skip the blank page. Lexem reads your prompt and variables, then brainstorms a diverse set of judge-scored cases — happy paths, edge cases, refusals — in one click.",
     },
     {
-      icon: LibraryBig,
-      title: "Templates, not blank pages",
+      icon: ShieldAlert,
+      title: "AI diff impact",
       body:
-        "Ship-with eval templates for support, summarisation, extraction, tone, refusals. One click to seed a suite with sensible cases.",
+        "Every diff comes with a plain-English summary plus flagged behaviour risks: tone shifts, scope creep, weakened guardrails. Catch the thing your team would have shipped by accident.",
+    },
+    {
+      icon: Shield,
+      title: "Eval-gated deploys",
+      body:
+        "Three environments per project, strictly promoted dev → staging → prod. Block promotions below your eval-score threshold. Optional teammate approval on any env.",
+    },
+    {
+      icon: BarChart3,
+      title: "Token analytics built in",
+      body:
+        "Per-version average tokens, 30-day daily trend, per-prompt totals. Powered by eval runs and a one-line lexem.logUsage() call — no extra observability stack to plumb.",
     },
   ];
 
@@ -328,13 +342,13 @@ function HowItWorks() {
       n: "02",
       title: "Run evals against any version",
       body:
-        "Build a suite of cases, run it against your current prompt with the model and key of your choice. See score, pass/fail, tokens, latency.",
+        "Write your own suite — or let Lexem auto-generate one from the prompt — then run against the model and key of your choice. See score, pass/fail, tokens, latency.",
     },
     {
       n: "03",
       title: "Diff, rollback, ship",
       body:
-        "When something regresses, diff to find the change, roll back in one click, or merge an experimental branch when its score beats main.",
+        "When something regresses, the AI-flagged diff impact shows what shifted. Roll back in one click, or merge an experimental branch when its eval score beats main.",
     },
   ];
 

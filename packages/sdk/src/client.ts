@@ -4,6 +4,8 @@ import {
   LexemError,
   type GetOptions,
   type LexemClientOptions,
+  type LogUsageInput,
+  type LogUsageOptions,
   type PromptResult,
 } from "./types.js";
 
@@ -97,6 +99,70 @@ export class LexemClient {
     const { missing, ...getOpts } = opts;
     const prompt = await this.get(slug, getOpts);
     return renderTemplate(prompt.content, vars, { missing });
+  }
+
+  /**
+   * Report token usage for a version that was actually run in your app.
+   * Powers the analytics dashboard (avg tokens in/out per version, daily
+   * trend, per-prompt totals).
+   *
+   * Call it after each LLM invocation, passing the `versionId` from the
+   * prompt's `get()` response:
+   *
+   * ```ts
+   * const p = await lexem.get("summarizer", { env: "production" });
+   * const completion = await openai.chat.completions.create({ ... });
+   * await lexem.logUsage({
+   *   versionId: p.versionId,
+   *   tokensIn:  completion.usage.prompt_tokens,
+   *   tokensOut: completion.usage.completion_tokens,
+   *   env:       "production",
+   * });
+   * ```
+   *
+   * Safe to fire-and-forget — wrap the call in `.catch(() => {})` if you
+   * don't want network failures to surface to the caller.
+   */
+  async logUsage(input: LogUsageInput, opts: LogUsageOptions = {}): Promise<void> {
+    if (!input?.versionId) throw new LexemError("versionId is required");
+    if (
+      !Number.isInteger(input.tokensIn) ||
+      !Number.isInteger(input.tokensOut) ||
+      input.tokensIn < 0 ||
+      input.tokensOut < 0
+    ) {
+      throw new LexemError("tokensIn and tokensOut must be non-negative integers");
+    }
+
+    const res = await this.fetchImpl(`${this.baseUrl}/v1/usage`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        versionId: input.versionId,
+        tokensIn: input.tokensIn,
+        tokensOut: input.tokensOut,
+        ...(input.env ? { env: input.env } : {}),
+      }),
+      signal: opts.signal,
+    });
+
+    if (!res.ok) {
+      let body: unknown = null;
+      try {
+        body = await res.json();
+      } catch {
+        /* ignore */
+      }
+      const message =
+        (body && typeof body === "object" && "error" in body && typeof (body as { error: unknown }).error === "string"
+          ? (body as { error: string }).error
+          : null) ?? `Lexem API error ${res.status}`;
+      throw new LexemError(message, res.status);
+    }
   }
 
   /** Drop all cached entries. Useful in tests or after a redeploy. */

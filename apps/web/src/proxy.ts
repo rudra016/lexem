@@ -1,7 +1,18 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PREFIXES = ["/login", "/signup", "/invite", "/docs", "/api/auth", "/api/signup"];
+const PUBLIC_PREFIXES = [
+  "/login",
+  "/signup",
+  "/invite",
+  "/docs",
+  "/forgot-password",
+  "/reset-password",
+  "/api/auth",
+  "/api/signup",
+  "/api/forgot-password",
+  "/api/reset-password",
+];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;

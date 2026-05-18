@@ -21,10 +21,24 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  memberships TeamMember[]
-  versions    Version[]    @relation("VersionAuthor")
-  accounts    Account[]
-  sessions    Session[]
+  memberships         TeamMember[]
+  versions            Version[]             @relation("VersionAuthor")
+  accounts            Account[]
+  sessions            Session[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {
@@ -147,6 +161,7 @@ model Project {
   prompts      Prompt[]
   environments Environment[]
   apiKeys      ApiKey[]
+  usageEvents  UsageEvent[]
 
   @@unique([teamId, slug])
 }
@@ -168,6 +183,7 @@ model Prompt {
   evals              Eval[]
   promptEnvironments PromptEnvironment[]
   deployments        Deployment[]
+  usageEvents        UsageEvent[]
 
   @@unique([projectId, slug])
 }
@@ -209,8 +225,29 @@ model Version {
   runs               Run[]
   deployments        Deployment[]
   promptEnvironments PromptEnvironment[]
+  usageEvents        UsageEvent[]
 
   @@index([promptId, createdAt])
+}
+
+model UsageEvent {
+  id        String   @id @default(cuid())
+  projectId String
+  promptId  String
+  versionId String
+  envName   String?
+  tokensIn  Int
+  tokensOut Int
+  source    String   // "eval" | "sdk" | "api"
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  prompt  Prompt  @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  version Version @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@index([promptId, createdAt])
+  @@index([versionId, createdAt])
 }
 
 model VersionTag {

@@ -10,6 +10,7 @@ import {
   FileText,
   FlaskConical,
   Boxes,
+  BarChart3,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -26,6 +27,7 @@ const NAV = [
   { href: "/prompts", label: "Prompts", icon: FileText },
   { href: "/evals", label: "Evals", icon: FlaskConical },
   { href: "/environments", label: "Environments", icon: Boxes },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

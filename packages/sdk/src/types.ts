@@ -55,6 +55,26 @@ export type PromptResult = {
   fetchedAt: string;
 };
 
+/**
+ * Token usage report payload for `logUsage()`. Sent to `POST /v1/usage` so
+ * it shows up in the project's analytics dashboard.
+ */
+export type LogUsageInput = {
+  /** The `versionId` returned from a previous `get()` call. */
+  versionId: string;
+  /** Non-negative integer count of input tokens. */
+  tokensIn: number;
+  /** Non-negative integer count of output tokens. */
+  tokensOut: number;
+  /** Optional environment name the version was fetched for. */
+  env?: string;
+};
+
+export type LogUsageOptions = {
+  /** AbortSignal for the underlying HTTP request. */
+  signal?: AbortSignal;
+};
+
 export class LexemError extends Error {
   status?: number;
   constructor(message: string, status?: number) {
